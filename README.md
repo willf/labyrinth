@@ -1,0 +1,2 @@
+# labyrinth
+A spiritual technology
