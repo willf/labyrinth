@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manual Graph Pathfinding Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Kalam:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        overscroll-behavior: none;
+      }
+      .notepad {
+        font-family: "Kalam", cursive;
+        background-color: #fefabc;
+        background-image: linear-gradient(
+          to bottom,
+          transparent 0%,
+          transparent 98%,
+          #9db5d8 98%
+        );
+        background-size: 100% 2.5em;
+        line-height: 2.5em;
+        border: 1px solid #ddd;
+      }
+      .notepad-title {
+        border-bottom: 2px solid #ef4444;
+      }
+      .graph-bg {
+        background-color: #f8fafc;
+        background-image: radial-gradient(#e2e8f0 1px, transparent 0);
+        background-size: 20px 20px;
+      }
+      .strikethrough {
+        text-decoration: line-through;
+        color: #9ca3af;
+      }
+      .graph-node text {
+        pointer-events: none;
+        user-select: none;
+        font-weight: 500;
+      }
+      #tracer-token {
+        transition: all 0.5s ease-in-out;
+        filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+      }
+      .memory-marker {
+        transition: all 0.3s ease-in-out;
+        opacity: 0.75;
+      }
+      .action-button {
+        transition: all 0.2s ease;
+      }
+      .action-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: scale(1);
+      }
+      .action-button:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      #message-box {
+        transition: opacity 0.3s, transform 0.3s;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-slate-100 flex flex-col items-center justify-center min-h-screen p-4 overflow-hidden"
+  >
+    <div class="w-full max-w-7xl mx-auto">
+      <div class="text-center mb-4">
+        <h1 class="text-3xl font-bold text-slate-800">
+          Manual Pathfinding Simulator
+        </h1>
+        <p class="text-slate-600">
+          Find all paths from vertex 0 to 6 using the manual method.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[75vh]">
+        <!-- Graph Area -->
+        <div
+          class="graph-bg border border-slate-300 rounded-xl shadow-lg relative overflow-hidden"
+        >
+          <svg id="graph-svg" class="w-full h-full">
+            <!-- Arrowhead Definition -->
+            <defs>
+              <marker
+                id="arrow"
+                viewBox="0 0 10 10"
+                refX="8"
+                refY="5"
+                markerWidth="6"
+                markerHeight="6"
+                orient="auto-start-reverse"
+              >
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b" />
+              </marker>
+            </defs>
+            <!-- Edges will be populated by JS -->
+            <!-- Nodes will be populated by JS -->
+            <!-- Memory markers container -->
+            <g id="memory-markers-container"></g>
+            <!-- Tracer token -->
+            <circle
+              id="tracer-token"
+              r="18"
+              fill="#facc15"
+              stroke="#ca8a04"
+              stroke-width="3"
+              cx="-50"
+              cy="-50"
+            ></circle>
+          </svg>
+        </div>
+
+        <!-- Notepad and Controls -->
+        <div class="flex flex-col gap-4">
+          <div
+            class="notepad bg-yellow-50 border-yellow-200 rounded-lg shadow-lg p-6 flex-grow text-2xl text-slate-700 overflow-y-auto"
+          >
+            <h2 class="notepad-title text-3xl font-bold text-red-600 pb-2 mb-2">
+              My Notepad
+            </h2>
+            <div class="mb-4">
+              <h3 class="font-bold text-slate-800">Current Path:</h3>
+              <p
+                id="current-path"
+                class="whitespace-normal break-words h-20"
+              ></p>
+            </div>
+            <div>
+              <h3 class="font-bold text-slate-800">Final Paths:</h3>
+              <ul id="final-paths" class="text-xl list-disc pl-8">
+                <!-- Completed paths will be added here -->
+              </ul>
+            </div>
+          </div>
+
+          <div
+            class="bg-white border border-slate-200 rounded-xl shadow-lg p-4"
+          >
+            <div
+              id="message-box"
+              class="bg-sky-100 border border-sky-300 text-sky-800 p-3 rounded-lg text-center mb-4 min-h-[50px] flex items-center justify-center"
+            >
+              <p id="message-text">Press 'Start' to begin the simulation.</p>
+            </div>
+            <div class="flex justify-center gap-4">
+              <button
+                id="start-btn"
+                class="action-button bg-blue-600 text-white font-bold py-2 px-6 rounded-lg shadow-md"
+              >
+                Start
+              </button>
+              <button
+                id="advance-btn"
+                class="action-button bg-green-600 text-white font-bold py-2 px-6 rounded-lg shadow-md"
+                disabled
+              >
+                Advance
+              </button>
+              <button
+                id="backtrack-btn"
+                class="action-button bg-amber-600 text-white font-bold py-2 px-6 rounded-lg shadow-md"
+                disabled
+              >
+                Backtrack
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const svg = document.getElementById("graph-svg");
+        const tracerToken = document.getElementById("tracer-token");
+        const memoryMarkersContainer = document.getElementById(
+          "memory-markers-container"
+        );
+
+        const startBtn = document.getElementById("start-btn");
+        const advanceBtn = document.getElementById("advance-btn");
+        const backtrackBtn = document.getElementById("backtrack-btn");
+
+        const currentPathEl = document.getElementById("current-path");
+        const finalPathsEl = document.getElementById("final-paths");
+        const messageText = document.getElementById("message-text");
+
+        const START_NODE = "0";
+        const END_NODE = "6";
+
+        // Graph data structure (adjacency list)
+        const graph = {
+          0: ["1"],
+          1: ["2", "3"],
+          2: ["4"],
+          3: ["4", "5"],
+          4: ["6"],
+          5: ["6"],
+          6: ["7"],
+          7: ["8"],
+        };
+
+        function calculateNodePositions(graph, startNode) {
+          const positions = {};
+          const levels = {};
+          const visited = new Set();
+          const queue = [{ nodeId: startNode, level: 0 }];
+          visited.add(startNode);
+
+          let maxLevel = 0;
+
+          // Step 1: Use Breadth-First Search (BFS) to find the level of each node
+          while (queue.length > 0) {
+            const { nodeId, level } = queue.shift();
+
+            if (!levels[level]) {
+              levels[level] = [];
+            }
+            levels[level].push(nodeId);
+            maxLevel = Math.max(maxLevel, level);
+
+            const neighbors = graph[nodeId] || [];
+            for (const neighbor of neighbors) {
+              if (!visited.has(neighbor)) {
+                visited.add(neighbor);
+                queue.push({ nodeId: neighbor, level: level + 1 });
+              }
+            }
+          }
+
+          // Step 2: Calculate x and y coordinates based on levels
+          const numLevels = Object.keys(levels).length;
+          Object.keys(levels).forEach((levelStr) => {
+            const level = parseInt(levelStr);
+            const nodesAtLevel = levels[level];
+            const numNodesInLevel = nodesAtLevel.length;
+
+            // X position is based on the level (column)
+            const x = 10 + level * (80 / (numLevels > 1 ? numLevels - 1 : 1));
+
+            nodesAtLevel.forEach((nodeId, index) => {
+              // Y position is spaced evenly within the column
+              const y = ((index + 1) * 100) / (numNodesInLevel + 1);
+              positions[nodeId] = {
+                x: `${x}%`,
+                y: `${y}%`,
+              };
+            });
+          });
+
+          // Ensure all nodes in graph have a position, even if disconnected
+          for (const nodeId in graph) {
+            if (!positions[nodeId]) {
+              // Assign a default position for orphan nodes if any (though BFS from start should cover all reachable)
+              positions[nodeId] = { x: "0%", y: "0%" };
+            }
+          }
+
+          return positions;
+        }
+
+        // Node positions for rendering are now calculated dynamically
+        const nodePositions = calculateNodePositions(graph, START_NODE);
+
+        let state = {};
+
+        function initializeState() {
+          return {
+            currentNode: null,
+            pathStack: [], // The current path of nodes
+            decisionStack: [], // Tracks forks: { node, nextChoiceIndex }
+            foundPaths: [],
+            isStarted: false,
+            isFinished: false,
+          };
+        }
+
+        // --- Drawing Functions ---
+
+        function drawGraph() {
+          svg.innerHTML = `
+                    <defs>
+                        <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b" />
+                        </marker>
+                    </defs>
+                    <g id="edges-container"></g>
+                    <g id="nodes-container"></g>
+                    <g id="memory-markers-container"></g>
+                `;
+
+          const edgesContainer = document.getElementById("edges-container");
+          const nodesContainer = document.getElementById("nodes-container");
+
+          // Draw edges
+          for (const node in graph) {
+            const startPos = nodePositions[node];
+            graph[node].forEach((neighbor) => {
+              const endPos = nodePositions[neighbor];
+              const edge = document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "line"
+              );
+              edge.setAttribute("x1", startPos.x);
+              edge.setAttribute("y1", startPos.y);
+              edge.setAttribute("x2", endPos.x);
+              edge.setAttribute("y2", endPos.y);
+              edge.setAttribute("stroke", "#94a3b8");
+              edge.setAttribute("stroke-width", "2");
+              edge.setAttribute("marker-end", "url(#arrow)");
+              edgesContainer.appendChild(edge);
+            });
+          }
+
+          // Draw nodes
+          for (const node in nodePositions) {
+            const pos = nodePositions[node];
+            const g = document.createElementNS(
+              "http://www.w3.org/2000/svg",
+              "g"
+            );
+            g.classList.add("graph-node");
+
+            const circle = document.createElementNS(
+              "http://www.w3.org/2000/svg",
+              "circle"
+            );
+            circle.setAttribute("cx", pos.x);
+            circle.setAttribute("cy", pos.y);
+            circle.setAttribute("r", "20");
+            circle.setAttribute(
+              "fill",
+              node === START_NODE
+                ? "#22c55e"
+                : node === END_NODE
+                ? "#ef4444"
+                : "#60a5fa"
+            );
+            circle.setAttribute("stroke", "#1e3a8a");
+            circle.setAttribute("stroke-width", "3");
+
+            const text = document.createElementNS(
+              "http://www.w3.org/2000/svg",
+              "text"
+            );
+            text.setAttribute("x", pos.x);
+            text.setAttribute("y", pos.y);
+            text.setAttribute("dy", ".3em");
+            text.setAttribute("text-anchor", "middle");
+            text.setAttribute("fill", "white");
+            text.setAttribute("font-size", "16");
+            text.textContent = node;
+
+            g.appendChild(circle);
+            g.appendChild(text);
+            nodesContainer.appendChild(g);
+          }
+
+          svg.appendChild(document.getElementById("memory-markers-container"));
+          tracerToken.remove();
+          svg.appendChild(tracerToken);
+        }
+
+        function moveToken(node) {
+          if (!node) return;
+          const pos = nodePositions[node];
+          tracerToken.setAttribute("cx", pos.x);
+          tracerToken.setAttribute("cy", pos.y);
+        }
+
+        function addMemoryMarker(node) {
+          if (document.getElementById(`marker-${node}`)) return;
+          const pos = nodePositions[node];
+          const marker = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "circle"
+          );
+          marker.setAttribute("id", `marker-${node}`);
+          marker.setAttribute("class", "memory-marker");
+          marker.setAttribute("cx", pos.x);
+          marker.setAttribute("cy", pos.y);
+          marker.setAttribute("r", "28");
+          marker.setAttribute("fill", "rgba(239, 68, 68, 0.4)");
+          marker.setAttribute("stroke", "#dc2626");
+          marker.setAttribute("stroke-width", "2");
+          marker.setAttribute("stroke-dasharray", "4 2");
+          document
+            .getElementById("memory-markers-container")
+            .appendChild(marker);
+        }
+
+        function removeMemoryMarker(node) {
+          const marker = document.getElementById(`marker-${node}`);
+          if (marker) marker.remove();
+        }
+
+        // --- UI Update Functions ---
+        function updateUI() {
+          // Update current path display
+          currentPathEl.innerHTML = state.pathStack.join(" &rarr; ");
+
+          // Update final paths
+          finalPathsEl.innerHTML = state.foundPaths
+            .map((p) => `<li>${p.join(" &rarr; ")}</li>`)
+            .join("");
+
+          // Update buttons
+          advanceBtn.disabled =
+            !state.isStarted || state.isFinished || isAtEnd(state.currentNode);
+          backtrackBtn.disabled =
+            !state.isStarted || state.isFinished || state.pathStack.length <= 1;
+
+          if (state.isFinished) {
+            startBtn.textContent = "Restart";
+            startBtn.classList.remove("bg-blue-600");
+            startBtn.classList.add("bg-indigo-600");
+          } else {
+            startBtn.textContent = "Start";
+            startBtn.classList.remove("bg-indigo-600");
+            startBtn.classList.add("bg-blue-600");
+          }
+        }
+
+        function showMessage(text) {
+          messageText.parentElement.style.opacity = "0";
+          messageText.parentElement.style.transform = "translateY(10px)";
+          setTimeout(() => {
+            messageText.textContent = text;
+            messageText.parentElement.style.opacity = "1";
+            messageText.parentElement.style.transform = "translateY(0)";
+          }, 150);
+        }
+
+        // --- Game Logic ---
+        function isAtEnd(node) {
+          if (!node) return false;
+          if (node === END_NODE) return true;
+          const neighbors = graph[node];
+          if (neighbors.length === 0) return true;
+
+          // Check if at a fork where all paths have been explored
+          const lastDecision =
+            state.decisionStack[state.decisionStack.length - 1];
+          if (lastDecision && lastDecision.node === node) {
+            return (
+              lastDecision.nextChoiceIndex >= graph[lastDecision.node].length
+            );
+          }
+          return false;
+        }
+
+        function handleStart() {
+          state = initializeState();
+          state.isStarted = true;
+          state.currentNode = START_NODE;
+          state.pathStack.push(START_NODE);
+
+          const markers = document.getElementById("memory-markers-container");
+          if (markers) markers.innerHTML = "";
+          moveToken(START_NODE);
+
+          showMessage(
+            `Tracer token placed at Start Vertex ${START_NODE}. Click 'Advance' to explore.`
+          );
+          updateUI();
+        }
+
+        function handleAdvance() {
+          const choices = graph[state.currentNode];
+          let nextNode;
+
+          if (choices.length === 0) {
+            showMessage(
+              `Dead end reached at vertex ${state.currentNode}. You must backtrack.`
+            );
+            updateUI();
+            return;
+          }
+
+          // Check if we are at a known fork
+          const lastDecision =
+            state.decisionStack[state.decisionStack.length - 1];
+          if (lastDecision && lastDecision.node === state.currentNode) {
+            // Continuing from a fork
+            nextNode = choices[lastDecision.nextChoiceIndex];
+            lastDecision.nextChoiceIndex++;
+          } else {
+            // New vertex, might be a new fork
+            if (choices.length > 1) {
+              state.decisionStack.push({
+                node: state.currentNode,
+                nextChoiceIndex: 1,
+              });
+              addMemoryMarker(state.currentNode);
+            }
+            nextNode = choices[0];
+          }
+
+          state.currentNode = nextNode;
+          state.pathStack.push(nextNode);
+          moveToken(nextNode);
+
+          // Check for outcomes
+          if (nextNode === END_NODE) {
+            state.foundPaths.push([...state.pathStack]);
+            showMessage(
+              `🎉 Path Found! Copied to notepad. Backtrack to find more.`
+            );
+          } else if (graph[nextNode].length === 0) {
+            showMessage(
+              `You've reached a dead end at ${nextNode}. You must backtrack.`
+            );
+          } else {
+            const nextChoices = graph[nextNode];
+            if (nextChoices.length > 1) {
+              showMessage(
+                `Moved to ${nextNode}. This is a fork with ${nextChoices.length} options. Click 'Advance' to explore one.`
+              );
+            } else {
+              showMessage(`Moved to ${nextNode}. Click 'Advance' to continue.`);
+            }
+          }
+
+          updateUI();
+        }
+
+        function handleBacktrack() {
+          if (state.pathStack.length <= 1) return;
+
+          // Pop current node
+          state.pathStack.pop();
+
+          // Get previous node, which is now the new current node
+          const previousNode = state.pathStack[state.pathStack.length - 1];
+          state.currentNode = previousNode;
+          moveToken(previousNode);
+
+          const lastDecision =
+            state.decisionStack[state.decisionStack.length - 1];
+
+          // Check if we've returned to a fork
+          if (lastDecision && lastDecision.node === previousNode) {
+            const choices = graph[previousNode];
+            if (lastDecision.nextChoiceIndex >= choices.length) {
+              // All choices from this fork are exhausted
+              state.decisionStack.pop();
+              removeMemoryMarker(previousNode);
+              if (state.pathStack.length > 1) {
+                showMessage(
+                  `Backtracked to ${previousNode}. All paths from here are explored. You must backtrack again.`
+                );
+              } else {
+                // This case handles finishing the entire search
+                state.isFinished = true;
+                showMessage(
+                  `🏁 All paths found! You have returned to the start. The simulation is complete.`
+                );
+              }
+            } else {
+              showMessage(
+                `Backtracked to fork at ${previousNode}. There are unexplored paths. Click 'Advance' to try the next one.`
+              );
+            }
+          } else {
+            showMessage(
+              `Backtracked to ${previousNode}. Click 'Backtrack' again or check for other paths.`
+            );
+          }
+
+          if (
+            state.pathStack.length === 1 &&
+            state.decisionStack.length === 0
+          ) {
+            state.isFinished = true;
+            showMessage(
+              `🏁 All paths found! You have returned to the start. The simulation is complete.`
+            );
+          }
+
+          updateUI();
+        }
+
+        // --- Event Listeners ---
+        startBtn.addEventListener("click", handleStart);
+        advanceBtn.addEventListener("click", handleAdvance);
+        backtrackBtn.addEventListener("click", handleBacktrack);
+
+        // Initial Draw
+        drawGraph();
+      });
+    </script>
+  </body>
+</html>

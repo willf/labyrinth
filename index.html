@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Labyrinth</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Kalam:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Georgia Pro", "Georgia", sans-serif;
+        overscroll-behavior: none;
+      }
+      .notepad {
+        font-family: "Ketem", cursive;
+        background-color: #fefabc;
+        background-image: linear-gradient(
+          to bottom,
+          transparent 0%,
+          transparent 98%,
+          #9db5d8 98%
+        );
+        background-size: 100% 2.5em;
+        line-height: 2.5em;
+        border: 1px solid #ddd;
+      }
+      .notepad-title {
+        border-bottom: 2px solid #ef4444;
+      }
+      .graph-bg {
+        background-color: #f8fafc;
+      }
+      .grid-cell-text {
+        pointer-events: none;
+        user-select: none;
+        font-weight: 500;
+        font-size: 1.5rem;
+      }
+      #tracer-token {
+        transition: all 0.5s ease-in-out;
+        filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+      }
+      .memory-marker {
+        transition: all 0.3s ease-in-out;
+        opacity: 0.75;
+      }
+      .action-button {
+        transition: all 0.2s ease;
+      }
+      .action-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: scale(1);
+      }
+      .action-button:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      #message-box {
+        transition: opacity 0.3s, transform 0.3s;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-slate-100 flex flex-col items-center justify-center min-h-screen p-4 overflow-hidden"
+  >
+    <div class="w-full max-w-7xl mx-auto">
+      <div class="text-center mb-4">
+        <h1 class="text-3xl font-bold text-slate-800">Labyrinth</h1>
+        <p class="text-slate-600">A spiritual technology.</p>
+      </div>
+
+      <!-- User Inputs -->
+      <div
+        class="bg-white p-4 rounded-xl shadow-md mb-6 border border-slate-200"
+      >
+        <div
+          class="flex flex-col sm:flex-row items-center justify-center gap-4"
+        >
+          <div>
+            <label
+              for="mainStringInput"
+              class="block text-sm font-medium text-slate-700"
+              >Phrase</label
+            >
+            <input
+              type="text"
+              id="mainStringInput"
+              value="ORA POR ME"
+              class="mt-1 block w-full sm:w-64 rounded-md border-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            />
+          </div>
+          <div>
+            <label
+              for="mValueInput"
+              class="block text-sm font-medium text-slate-700"
+              >Depth</label
+            >
+            <input
+              type="range"
+              id="mValueInput"
+              min="1"
+              max="8"
+              value="4"
+              step="1"
+              class="mt-2 block w-56 cursor-pointer accent-indigo-600"
+            />
+            <div
+              class="flex items-center justify-between mt-1 text-[11px] tracking-wide text-slate-500"
+            >
+              <span id="mValueMinLabel">1</span>
+              <span class="text-slate-600 font-medium"
+                >Depth:
+                <span id="mValueDisplay" class="tabular-nums">4</span></span
+              >
+              <span id="mValueMaxLabel">8</span>
+            </div>
+          </div>
+          <button
+            id="generate-btn"
+            class="self-end sm:self-center action-button bg-indigo-600 text-white font-bold py-2 px-6 rounded-lg shadow-md mt-2 sm:mt-0"
+          >
+            Generate
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[75vh]">
+        <!-- Graph Area -->
+        <div
+          class="graph-bg border border-slate-300 rounded-xl shadow-lg relative overflow-hidden p-4"
+        >
+          <svg id="graph-svg" class="w-full h-full">
+            <!-- Matrix will be populated by JS -->
+            <!-- Memory markers container -->
+            <g id="memory-markers-container"></g>
+            <!-- Tracer token -->
+            <circle
+              id="tracer-token"
+              r="18"
+              fill="#facc15"
+              stroke="#ca8a04"
+              stroke-width="3"
+              cx="-100"
+              cy="-100"
+            ></circle>
+          </svg>
+        </div>
+
+        <!-- Notepad and Controls -->
+        <div class="flex flex-col gap-4">
+          <div
+            class="notepad bg-yellow-50 border-yellow-200 rounded-lg shadow-lg p-6 flex-grow text-2xl text-slate-700 overflow-y-auto min-h-0"
+          >
+            <h2 class="notepad-title text-3xl font-bold text-red-600 pb-2 mb-2">
+              My Notepad
+            </h2>
+            <div class="mb-4">
+              <h3 class="font-bold text-slate-800">Current Path:</h3>
+              <p
+                id="current-path"
+                class="whitespace-normal break-words h-20"
+              ></p>
+            </div>
+            <div>
+              <h3 class="font-bold text-slate-800">Paths Followed</h3>
+              <ol id="final-paths" class="text-xl list-none pl-8">
+                <!-- Completed paths will be added here -->
+              </ol>
+            </div>
+          </div>
+
+          <div
+            class="bg-white border border-slate-200 rounded-xl shadow-lg p-4"
+          >
+            <div
+              id="message-box"
+              class="bg-sky-100 border border-sky-300 text-sky-800 p-3 rounded-lg text-center mb-4 min-h-[50px] flex items-center justify-center"
+            >
+              <p id="message-text">Press 'Start' to begin the simulation.</p>
+            </div>
+            <div class="flex justify-center gap-4">
+              <button
+                id="start-btn"
+                class="action-button bg-blue-600 text-white font-bold py-2 px-6 rounded-lg shadow-md"
+              >
+                Start
+              </button>
+              <button
+                id="advance-btn"
+                class="action-button bg-green-600 text-white font-bold py-2 px-6 rounded-lg shadow-md"
+                disabled
+              >
+                Advance
+              </button>
+              <button
+                id="backtrack-btn"
+                class="action-button bg-amber-600 text-white font-bold py-2 px-6 rounded-lg shadow-md"
+                disabled
+              >
+                Backtrack
+              </button>
+              <button
+                id="auto-btn"
+                class="action-button bg-purple-600 text-white font-bold py-2 px-6 rounded-lg shadow-md"
+                disabled
+              >
+                Auto
+              </button>
+              <button
+                id="stop-auto-btn"
+                class="action-button bg-rose-600 text-white font-bold py-2 px-6 rounded-lg shadow-md"
+                disabled
+              >
+                Stop
+              </button>
+            </div>
+            <div class="flex items-center gap-3 mt-6 justify-center flex-wrap">
+              <label
+                for="speed-range"
+                class="text-sm font-medium text-slate-700"
+                >Speed</label
+              >
+              <input
+                type="range"
+                id="speed-range"
+                min="100"
+                max="2000"
+                step="50"
+                value="650"
+                class="w-48 accent-indigo-600 cursor-pointer"
+              />
+              <span
+                id="speed-display"
+                class="text-xs text-slate-600 tabular-nums w-16 text-right"
+                >650 ms</span
+              >
+              <span class="text-[10px] uppercase tracking-wide text-slate-400"
+                >(Fast → Slow)</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const svg = document.getElementById("graph-svg");
+        const memoryMarkersContainer = document.getElementById(
+          "memory-markers-container"
+        );
+        const tracerToken = document.getElementById("tracer-token");
+
+        const startBtn = document.getElementById("start-btn");
+        const advanceBtn = document.getElementById("advance-btn");
+        const backtrackBtn = document.getElementById("backtrack-btn");
+        const autoBtn = document.getElementById("auto-btn");
+        const stopAutoBtn = document.getElementById("stop-auto-btn");
+        const generateBtn = document.getElementById("generate-btn");
+        const speedRange = document.getElementById("speed-range");
+        const speedDisplay = document.getElementById("speed-display");
+
+        const mainStringInput = document.getElementById("mainStringInput");
+        const mValueInput = document.getElementById("mValueInput");
+        const mValueDisplay = document.getElementById("mValueDisplay");
+        const mValueMinLabel = document.getElementById("mValueMinLabel");
+        const mValueMaxLabel = document.getElementById("mValueMaxLabel");
+
+        const currentPathEl = document.getElementById("current-path");
+        const finalPathsEl = document.getElementById("final-paths");
+        const messageText = document.getElementById("message-text");
+
+        let letterMatrix,
+          graph,
+          START_NODE,
+          END_NODE,
+          numRows,
+          numCols,
+          cellPositions;
+        let state = {};
+        let autoIntervalId = null;
+        let autoStepMs = 650; // speed of automatic traversal (ms)
+
+        function generateMatrixAndGraph(s, m) {
+          const n = s.length;
+          if (m > n || m <= 0 || !s) {
+            return null;
+          }
+          const numRows = m;
+          const numCols = n - m + 1;
+
+          const matrix = Array(numRows)
+            .fill(null)
+            .map(() => Array(numCols).fill(""));
+          const newGraph = {};
+
+          for (let j = 0; j < numCols; j++) {
+            const sub = s.substring(j, j + m);
+            for (let i = 0; i < numRows; i++) {
+              matrix[i][j] = sub.charAt(i);
+            }
+          }
+
+          for (let i = 0; i < numRows; i++) {
+            for (let j = 0; j < numCols; j++) {
+              const nodeId = `${i},${j}`;
+              newGraph[nodeId] = [];
+              if (i + 1 < numRows) newGraph[nodeId].push(`${i + 1},${j}`);
+              if (j + 1 < numCols) newGraph[nodeId].push(`${i},${j + 1}`);
+            }
+          }
+
+          return {
+            letterMatrix: matrix,
+            graph: newGraph,
+            startNode: "0,0",
+            endNode: `${numRows - 1},${numCols - 1}`,
+            numRows,
+            numCols,
+          };
+        }
+
+        function calculateCellPositions(rows, cols) {
+          const positions = {};
+          const cellWidth = 100 / cols;
+          const cellHeight = 100 / rows;
+
+          for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < cols; j++) {
+              const nodeId = `${i},${j}`;
+              positions[nodeId] = {
+                x: `${j * cellWidth}%`,
+                y: `${i * cellHeight}%`,
+                cx: `${j * cellWidth + cellWidth / 2}%`,
+                cy: `${i * cellHeight + cellHeight / 2}%`,
+                width: `${cellWidth}%`,
+                height: `${cellHeight}%`,
+                radius: `${Math.min(cellWidth, cellHeight) / 3}%`,
+              };
+            }
+          }
+          return positions;
+        }
+
+        function setupSimulation(s, m_val) {
+          const result = generateMatrixAndGraph(s.replace(/\s/g, ""), m_val);
+
+          if (!result) {
+            svg.innerHTML = "";
+            showMessage(
+              "Error: Invalid input. Please check the string and 'm' value."
+            );
+            startBtn.disabled = true;
+            advanceBtn.disabled = true;
+            backtrackBtn.disabled = true;
+            return;
+          }
+
+          ({
+            letterMatrix,
+            graph,
+            startNode: START_NODE,
+            endNode: END_NODE,
+            numRows,
+            numCols,
+          } = result);
+          cellPositions = calculateCellPositions(numRows, numCols);
+
+          state = initializeState();
+          drawMatrixGrid();
+
+          currentPathEl.innerHTML = "";
+          finalPathsEl.innerHTML = "";
+          memoryMarkersContainer.innerHTML = "";
+          tracerToken.setAttribute("cx", "-100");
+          tracerToken.setAttribute("cy", "-100");
+
+          showMessage("New matrix generated. Press 'Start' to begin.");
+          startBtn.disabled = false;
+          advanceBtn.disabled = true;
+          backtrackBtn.disabled = true;
+          updateUI();
+        }
+
+        function initializeState() {
+          return {
+            currentNode: null,
+            pathStack: [],
+            decisionStack: [],
+            foundPaths: [],
+            isStarted: false,
+            isFinished: false,
+            isAutoRunning: false,
+          };
+        }
+
+        function drawMatrixGrid() {
+          svg.innerHTML = "";
+          const gridContainer = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "g"
+          );
+
+          for (let i = 0; i < numRows; i++) {
+            for (let j = 0; j < numCols; j++) {
+              const nodeId = `${i},${j}`;
+              const pos = cellPositions[nodeId];
+              const g = document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "g"
+              );
+              const rect = document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "rect"
+              );
+              rect.setAttribute("x", pos.x);
+              rect.setAttribute("y", pos.y);
+              rect.setAttribute("width", pos.width);
+              rect.setAttribute("height", pos.height);
+
+              let fillClass = "fill-white";
+              if (nodeId === START_NODE) fillClass = "fill-green-200";
+              if (nodeId === END_NODE) fillClass = "fill-red-200";
+              rect.setAttribute("class", `stroke-slate-300 ${fillClass}`);
+
+              const text = document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "text"
+              );
+              text.setAttribute("x", pos.cx);
+              text.setAttribute("y", pos.cy);
+              text.setAttribute("dy", ".3em");
+              text.setAttribute("text-anchor", "middle");
+              text.setAttribute("class", "grid-cell-text fill-slate-700");
+              text.textContent = letterMatrix[i][j];
+
+              g.appendChild(rect);
+              g.appendChild(text);
+              gridContainer.appendChild(g);
+            }
+          }
+          svg.appendChild(gridContainer);
+          svg.appendChild(memoryMarkersContainer);
+          svg.appendChild(tracerToken);
+        }
+
+        function moveToken(node) {
+          if (!node || !cellPositions[node]) return;
+          const pos = cellPositions[node];
+          tracerToken.setAttribute("cx", pos.cx);
+          tracerToken.setAttribute("cy", pos.cy);
+        }
+
+        function addMemoryMarker(node) {
+          if (document.getElementById(`marker-${node.replace(",", "-")}`))
+            return;
+          const pos = cellPositions[node];
+          const marker = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "circle"
+          );
+          marker.setAttribute("id", `marker-${node.replace(",", "-")}`);
+          marker.setAttribute("class", "memory-marker");
+          marker.setAttribute("cx", pos.cx);
+          marker.setAttribute("cy", pos.cy);
+          marker.setAttribute("r", pos.radius);
+          marker.setAttribute("fill", "none");
+          marker.setAttribute("stroke", "#dc2626");
+          marker.setAttribute("stroke-width", "3");
+          marker.setAttribute("stroke-dasharray", "4 2");
+          memoryMarkersContainer.appendChild(marker);
+        }
+
+        function removeMemoryMarker(node) {
+          const marker = document.getElementById(
+            `marker-${node.replace(",", "-")}`
+          );
+          if (marker) marker.remove();
+        }
+
+        function getLetterFromNodeId(nodeId) {
+          const [row, col] = nodeId.split(",");
+          return letterMatrix[parseInt(row)][parseInt(col)];
+        }
+
+        function updateUI() {
+          const pathLetters = state.pathStack.map(getLetterFromNodeId);
+          currentPathEl.innerHTML = pathLetters.join("");
+          // Show only the count of paths discovered so far (not the full list)
+          finalPathsEl.innerHTML = `<li class=\"font-semibold\">${state.foundPaths.length}</li>`;
+
+          advanceBtn.disabled =
+            !state.isStarted || state.isFinished || isAtEnd(state.currentNode);
+          backtrackBtn.disabled =
+            !state.isStarted || state.isFinished || state.pathStack.length <= 1;
+
+          // Auto mode button states
+          if (state.isAutoRunning) {
+            advanceBtn.disabled = true;
+            backtrackBtn.disabled = true;
+            autoBtn.disabled = true;
+            stopAutoBtn.disabled = false;
+          } else {
+            autoBtn.disabled = state.isFinished || !state.isStarted;
+            stopAutoBtn.disabled = true;
+          }
+
+          if (state.isFinished) {
+            startBtn.textContent = "Restart";
+            startBtn.classList.remove("bg-blue-600");
+            startBtn.classList.add("bg-indigo-600");
+          } else {
+            startBtn.textContent = "Start";
+            startBtn.classList.remove("bg-indigo-600");
+            startBtn.classList.add("bg-blue-600");
+          }
+        }
+
+        function showMessage(text) {
+          messageText.parentElement.style.opacity = "0";
+          messageText.parentElement.style.transform = "translateY(10px)";
+          setTimeout(() => {
+            messageText.textContent = text;
+            messageText.parentElement.style.opacity = "1";
+            messageText.parentElement.style.transform = "translateY(0)";
+          }, 150);
+        }
+
+        function isAtEnd(node) {
+          if (!node) return false;
+          if (node === END_NODE) return true;
+          const neighbors = graph[node] || [];
+          if (neighbors.length === 0) return true;
+
+          const lastDecision =
+            state.decisionStack[state.decisionStack.length - 1];
+          if (lastDecision && lastDecision.node === node) {
+            return (
+              lastDecision.nextChoiceIndex >= graph[lastDecision.node].length
+            );
+          }
+          return false;
+        }
+
+        function handleStart() {
+          state = initializeState();
+          state.isStarted = true;
+          state.currentNode = START_NODE;
+          state.pathStack.push(START_NODE);
+          memoryMarkersContainer.innerHTML = "";
+          moveToken(START_NODE);
+          showMessage(
+            `Tracer token placed at the start. Click 'Advance' to explore.`
+          );
+          updateUI();
+        }
+
+        function handleAdvance() {
+          const choices = graph[state.currentNode];
+          let nextNode;
+
+          if (choices.length === 0) {
+            showMessage(`Dead end reached. You must backtrack.`);
+            updateUI();
+            return;
+          }
+
+          const lastDecision =
+            state.decisionStack[state.decisionStack.length - 1];
+          if (lastDecision && lastDecision.node === state.currentNode) {
+            nextNode = choices[lastDecision.nextChoiceIndex];
+            lastDecision.nextChoiceIndex++;
+          } else {
+            if (choices.length > 1) {
+              state.decisionStack.push({
+                node: state.currentNode,
+                nextChoiceIndex: 1,
+              });
+              addMemoryMarker(state.currentNode);
+            }
+            nextNode = choices[0];
+          }
+          state.currentNode = nextNode;
+          state.pathStack.push(nextNode);
+          moveToken(nextNode);
+
+          if (nextNode === END_NODE) {
+            state.foundPaths.push([...state.pathStack]);
+            showMessage(
+              `🎉 Path Found! Copied to notepad. Backtrack to find more.`
+            );
+          } else {
+            showMessage(
+              `Moved to letter '${getLetterFromNodeId(
+                nextNode
+              )}'. Click 'Advance' to continue.`
+            );
+          }
+          updateUI();
+        }
+
+        function handleBacktrack() {
+          if (state.pathStack.length <= 1) return; // nothing to backtrack
+
+          // Remove the current node first (end of current exploration branch)
+          // (e.g., after reaching END or a dead-end or user-initiated)
+          state.pathStack.pop();
+
+          // Walk back up until we either:
+          // 1. Find a decision node (one stored in decisionStack top) with remaining choices, or
+          // 2. Exhaust everything (finish) reaching start with no remaining decisions.
+          while (state.pathStack.length > 0) {
+            const node = state.pathStack[state.pathStack.length - 1];
+            const lastDecision =
+              state.decisionStack[state.decisionStack.length - 1];
+
+            if (lastDecision && lastDecision.node === node) {
+              // Is there another unexplored child from this fork?
+              if (lastDecision.nextChoiceIndex < graph[node].length) {
+                // We stop here; this is the fork to resume from.
+                state.currentNode = node;
+                moveToken(node);
+                showMessage(
+                  `Backtracked to fork at '${getLetterFromNodeId(
+                    node
+                  )}'. Click 'Advance' to try the next path.`
+                );
+                updateUI();
+                return;
+              } else {
+                // Fork fully explored; remove its decision record & marker, then pop it from path to keep climbing.
+                state.decisionStack.pop();
+                removeMemoryMarker(node);
+                if (state.pathStack.length === 1) {
+                  // This was the start node and it's exhausted.
+                  state.currentNode = node;
+                  state.isFinished = true;
+                  moveToken(node);
+                  showMessage(
+                    `🏁 All paths found! You have returned to the start.`
+                  );
+                  updateUI();
+                  return;
+                }
+                state.pathStack.pop();
+                continue; // continue climbing
+              }
+            } else {
+              // Not a decision node (linear segment). Pop it and continue climbing unless it's the start.
+              if (state.pathStack.length === 1) {
+                state.currentNode = node;
+                state.isFinished = true;
+                moveToken(node);
+                showMessage(`🏁 All paths found! The simulation is complete.`);
+                updateUI();
+                return;
+              }
+              state.pathStack.pop();
+            }
+          }
+
+          // Fallback (shouldn't normally reach here): mark finished at start.
+          if (state.pathStack.length === 0) {
+            state.pathStack = [START_NODE];
+            state.currentNode = START_NODE;
+            state.isFinished = true;
+            moveToken(START_NODE);
+            showMessage(`🏁 All paths found!`);
+            updateUI();
+          }
+        }
+
+        function stepAuto() {
+          if (!state.isStarted) handleStart();
+          if (state.isFinished) {
+            stopAuto("Exploration complete.");
+            return;
+          }
+          // If current position is at end of path or choices exhausted, backtrack
+          if (state.currentNode === END_NODE || isAtEnd(state.currentNode)) {
+            handleBacktrack();
+          } else {
+            handleAdvance();
+          }
+          if (state.isFinished) {
+            stopAuto("Exploration complete.");
+          }
+        }
+
+        function startAuto() {
+          if (autoIntervalId) return; // already running
+          if (!state.isStarted) handleStart();
+          state.isAutoRunning = true;
+          // ensure UI reflects auto mode
+          updateUI();
+          showMessage("Automatic exploration started.");
+          autoIntervalId = setInterval(stepAuto, autoStepMs);
+        }
+
+        function stopAuto(msg) {
+          if (autoIntervalId) {
+            clearInterval(autoIntervalId);
+            autoIntervalId = null;
+          }
+          if (state.isAutoRunning) {
+            state.isAutoRunning = false;
+            updateUI();
+            showMessage(msg || "Automatic exploration stopped.");
+          }
+        }
+
+        // Ensure auto mode stops when generating new matrix
+        function ensureStopAutoBeforeReset() {
+          if (state.isAutoRunning) {
+            stopAuto("Auto stopped due to regeneration.");
+          }
+        }
+
+        generateBtn.addEventListener("click", () => {
+          ensureStopAutoBeforeReset();
+          const newString = mainStringInput.value.trim().toUpperCase();
+          const newM = parseInt(mValueInput.value);
+          const cleanLen = newString.replace(/\s/g, "").length;
+
+          if (!newString) {
+            showMessage("Error: String cannot be empty.");
+            return;
+          }
+          if (cleanLen === 0) {
+            showMessage(
+              "Error: Phrase must contain at least one non-space character."
+            );
+            return;
+          }
+          if (isNaN(newM) || newM <= 0) {
+            showMessage("Error: 'm' must be a positive number.");
+            return;
+          }
+          if (newM > cleanLen) {
+            showMessage(
+              `Error: 'm' (${newM}) cannot be greater than (non-space) length (${cleanLen}).`
+            );
+            return;
+          }
+
+          mainStringInput.value = newString;
+          setupSimulation(newString, newM);
+        });
+
+        startBtn.addEventListener("click", handleStart);
+        advanceBtn.addEventListener("click", handleAdvance);
+        backtrackBtn.addEventListener("click", handleBacktrack);
+        autoBtn.addEventListener("click", startAuto);
+        stopAutoBtn.addEventListener("click", () => stopAuto());
+
+        // Width slider dynamic bounds (depends on phrase length without spaces)
+        function updateWidthSliderBounds() {
+          const cleanLen = mainStringInput.value.replace(/\s/g, "").length;
+          if (cleanLen <= 0) {
+            mValueInput.min = 0;
+            mValueInput.max = 0;
+            mValueInput.value = 0;
+            mValueDisplay.textContent = 0;
+            mValueMinLabel.textContent = 0;
+            mValueMaxLabel.textContent = 0;
+            return;
+          }
+          // Maintain current value or clamp
+          let current = parseInt(mValueInput.value, 10);
+          if (isNaN(current) || current < 1) current = 1;
+          if (current > cleanLen) current = cleanLen;
+          mValueInput.min = 1;
+          mValueInput.max = cleanLen;
+          mValueInput.value = current;
+          mValueDisplay.textContent = current;
+          mValueMinLabel.textContent = "1";
+          mValueMaxLabel.textContent = String(cleanLen);
+        }
+
+        mValueInput.addEventListener("input", () => {
+          mValueDisplay.textContent = mValueInput.value;
+        });
+        mainStringInput.addEventListener("input", () => {
+          // Uppercase transform live (optional) - keep natural typing but we uppercase on generate
+          updateWidthSliderBounds();
+        });
+        // Initialize slider bounds at load
+        updateWidthSliderBounds();
+
+        // Speed slider logic
+        function applySpeedChange(newVal) {
+          autoStepMs = newVal;
+          speedDisplay.textContent = `${autoStepMs} ms`;
+          // If auto is running, restart interval with new speed
+          if (state.isAutoRunning) {
+            if (autoIntervalId) clearInterval(autoIntervalId);
+            autoIntervalId = setInterval(stepAuto, autoStepMs);
+          }
+        }
+        speedRange.addEventListener("input", (e) => {
+          const v = parseInt(e.target.value, 10);
+          if (!isNaN(v)) applySpeedChange(v);
+        });
+        // Initialize display
+        applySpeedChange(parseInt(speedRange.value, 10));
+
+        // Initial Draw
+        setupSimulation(mainStringInput.value, parseInt(mValueInput.value));
+      });
+    </script>
+    <footer
+      class="mt-10 w-full text-center text-xs sm:text-sm text-slate-500 pb-4"
+    >
+      Made with <span aria-label="love" class="text-rose-500">❤</span> by
+      <span class="font-semibold text-slate-700">Will Fitzgerald</span>. Ora por
+      me.
+    </footer>
+  </body>
+</html>
