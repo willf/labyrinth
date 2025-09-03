@@ -62,6 +62,26 @@
       #message-box {
         transition: opacity 0.3s, transform 0.3s;
       }
+      /* Mobile (below Tailwind sm: 640px) adjustments */
+      @media (max-width: 639px) {
+        .notepad {
+          font-size: 1rem;
+          line-height: 1.6;
+          background-size: 100% 1.8em;
+          padding: 1rem !important;
+          max-height: 220px;
+          overflow-y: auto;
+        }
+        .notepad-title {
+          font-size: 1.5rem;
+        }
+        .mobile-collapsed .notepad {
+          display: none;
+        }
+        .mobile-toggle-btn::after {
+          content: attr(data-state);
+        }
+      }
     </style>
   </head>
   <body
@@ -151,7 +171,7 @@
         </div>
 
         <!-- Notepad and Controls -->
-        <div class="flex flex-col gap-4">
+        <div class="flex flex-col-reverse sm:flex-col gap-4" id="right-column">
           <div
             class="notepad bg-yellow-50 border-yellow-200 rounded-lg shadow-lg p-6 flex-grow text-2xl text-slate-700 overflow-y-auto min-h-0"
           >
@@ -207,15 +227,9 @@
                 id="auto-btn"
                 class="action-button bg-purple-600 text-white font-bold py-2 px-6 rounded-lg shadow-md"
                 disabled
+                data-mode="stopped"
               >
                 Auto
-              </button>
-              <button
-                id="stop-auto-btn"
-                class="action-button bg-rose-600 text-white font-bold py-2 px-6 rounded-lg shadow-md"
-                disabled
-              >
-                Stop
               </button>
             </div>
             <div class="flex items-center gap-3 mt-6 justify-center flex-wrap">
@@ -242,6 +256,17 @@
                 >(Fast → Slow)</span
               >
             </div>
+            <!-- Mobile only notepad toggle -->
+            <div class="mt-6 text-center sm:hidden">
+              <button
+                id="toggle-notepad-btn"
+                class="mobile-toggle-btn action-button bg-slate-700 text-white font-semibold py-2 px-5 rounded-md shadow"
+                type="button"
+                aria-expanded="false"
+                aria-controls="notepad-panel"
+                data-state="Show Notepad"
+              ></button>
+            </div>
           </div>
         </div>
       </div>
@@ -259,7 +284,6 @@
         const advanceBtn = document.getElementById("advance-btn");
         const backtrackBtn = document.getElementById("backtrack-btn");
         const autoBtn = document.getElementById("auto-btn");
-        const stopAutoBtn = document.getElementById("stop-auto-btn");
         const generateBtn = document.getElementById("generate-btn");
         const speedRange = document.getElementById("speed-range");
         const speedDisplay = document.getElementById("speed-display");
@@ -273,6 +297,9 @@
         const currentPathEl = document.getElementById("current-path");
         const finalPathsEl = document.getElementById("final-paths");
         const messageText = document.getElementById("message-text");
+        const rightColumn = document.getElementById("right-column");
+        const toggleNotepadBtn = document.getElementById("toggle-notepad-btn");
+        const notepadEl = document.querySelector(".notepad");
 
         let letterMatrix,
           graph,
@@ -498,15 +525,21 @@
           backtrackBtn.disabled =
             !state.isStarted || state.isFinished || state.pathStack.length <= 1;
 
-          // Auto mode button states
+          // Auto toggle button state
           if (state.isAutoRunning) {
             advanceBtn.disabled = true;
             backtrackBtn.disabled = true;
-            autoBtn.disabled = true;
-            stopAutoBtn.disabled = false;
+            autoBtn.disabled = false;
+            autoBtn.textContent = "Stop";
+            autoBtn.classList.remove("bg-purple-600");
+            autoBtn.classList.add("bg-rose-600");
+            autoBtn.dataset.mode = "running";
           } else {
             autoBtn.disabled = state.isFinished || !state.isStarted;
-            stopAutoBtn.disabled = true;
+            autoBtn.textContent = "Auto";
+            autoBtn.classList.remove("bg-rose-600");
+            autoBtn.classList.add("bg-purple-600");
+            autoBtn.dataset.mode = "stopped";
           }
 
           if (state.isFinished) {
@@ -517,6 +550,16 @@
             startBtn.textContent = "Start";
             startBtn.classList.remove("bg-indigo-600");
             startBtn.classList.add("bg-blue-600");
+          }
+          // Update mobile notepad toggle state label if present
+          if (toggleNotepadBtn && window.innerWidth < 640) {
+            const hidden =
+              notepadEl.classList.contains("hidden") ||
+              rightColumn.classList.contains("mobile-collapsed");
+            toggleNotepadBtn.dataset.state = hidden
+              ? "Show Notepad"
+              : "Hide Notepad";
+            toggleNotepadBtn.setAttribute("aria-expanded", String(!hidden));
           }
         }
 
@@ -754,8 +797,13 @@
         startBtn.addEventListener("click", handleStart);
         advanceBtn.addEventListener("click", handleAdvance);
         backtrackBtn.addEventListener("click", handleBacktrack);
-        autoBtn.addEventListener("click", startAuto);
-        stopAutoBtn.addEventListener("click", () => stopAuto());
+        autoBtn.addEventListener("click", () => {
+          if (state.isAutoRunning) {
+            stopAuto();
+          } else {
+            startAuto();
+          }
+        });
 
         // Width slider dynamic bounds (depends on phrase length without spaces)
         function updateWidthSliderBounds() {
@@ -810,6 +858,39 @@
 
         // Initial Draw
         setupSimulation(mainStringInput.value, parseInt(mValueInput.value));
+
+        // --- Mobile notepad toggle logic ---
+        function applyMobileLayout() {
+          if (window.innerWidth < 640) {
+            // Collapse by default if not already decided
+            if (!rightColumn.classList.contains("mobile-init")) {
+              rightColumn.classList.add("mobile-collapsed", "mobile-init");
+            }
+            notepadEl.setAttribute("id", "notepad-panel");
+            if (toggleNotepadBtn) toggleNotepadBtn.classList.remove("hidden");
+          } else {
+            rightColumn.classList.remove("mobile-collapsed");
+            if (toggleNotepadBtn) toggleNotepadBtn.classList.add("hidden");
+            notepadEl.classList.remove("hidden");
+          }
+          updateUI();
+        }
+
+        if (toggleNotepadBtn) {
+          toggleNotepadBtn.addEventListener("click", () => {
+            rightColumn.classList.toggle("mobile-collapsed");
+            if (rightColumn.classList.contains("mobile-collapsed")) {
+              notepadEl.classList.add("hidden");
+            } else {
+              notepadEl.classList.remove("hidden");
+            }
+            updateUI();
+          });
+        }
+        window.addEventListener("resize", () => {
+          applyMobileLayout();
+        });
+        applyMobileLayout();
       });
     </script>
     <footer
