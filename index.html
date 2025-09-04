@@ -62,6 +62,15 @@
       #message-box {
         transition: opacity 0.3s, transform 0.3s;
       }
+      /* Graph area minimum sizing to prevent letter collapse */
+      #graph-area {
+        min-height: 340px; /* baseline safeguard */
+      }
+      @media (min-width: 640px) {
+        #graph-area {
+          min-height: 420px;
+        }
+      }
       /* Mobile (below Tailwind sm: 640px) adjustments */
       @media (max-width: 639px) {
         .notepad {
@@ -81,11 +90,21 @@
         .mobile-toggle-btn::after {
           content: attr(data-state);
         }
+        /* Collapsible controls panel */
+        #controls-panel.controls-collapsed #controls-body {
+          display: none;
+        }
+        #controls-panel #controls-summary {
+          display: block;
+        }
+        #controls-panel button#toggle-controls-btn {
+          font-size: 0.75rem;
+        }
       }
     </style>
   </head>
   <body
-    class="bg-slate-100 flex flex-col items-center justify-center min-h-screen p-4 overflow-hidden"
+    class="bg-slate-100 flex flex-col items-center justify-start min-h-screen p-4"
   >
     <div class="w-full max-w-7xl mx-auto">
       <div class="text-center mb-4">
@@ -93,64 +112,133 @@
         <p class="text-slate-600">A spiritual technology.</p>
       </div>
 
-      <!-- User Inputs -->
+      <!-- User Inputs (Collapsible on mobile) -->
       <div
-        class="bg-white p-4 rounded-xl shadow-md mb-6 border border-slate-200"
+        id="controls-panel"
+        class="bg-white rounded-xl shadow-md mb-4 border border-slate-200"
       >
         <div
-          class="flex flex-col sm:flex-row items-center justify-center gap-4"
+          class="sm:hidden flex items-center justify-between px-4 py-2 border-b border-slate-100"
         >
-          <div>
-            <label
-              for="mainStringInput"
-              class="block text-sm font-medium text-slate-700"
-              >Phrase</label
+          <button
+            id="toggle-controls-btn"
+            type="button"
+            aria-expanded="false"
+            class="text-xs font-semibold tracking-wide text-slate-700 flex items-center gap-2"
+          >
+            <span id="controls-toggle-label">Show</span>
+            <svg
+              class="w-3 h-3 transition-transform"
+              id="controls-chevron"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
             >
-            <input
-              type="text"
-              id="mainStringInput"
-              value="ORA POR ME"
-              class="mt-1 block w-full sm:w-64 rounded-md border-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
-          </div>
-          <div>
-            <label
-              for="mValueInput"
-              class="block text-sm font-medium text-slate-700"
-              >Depth</label
-            >
-            <input
-              type="range"
-              id="mValueInput"
-              min="1"
-              max="8"
-              value="4"
-              step="1"
-              class="mt-2 block w-56 cursor-pointer accent-indigo-600"
-            />
-            <div
-              class="flex items-center justify-between mt-1 text-[11px] tracking-wide text-slate-500"
-            >
-              <span id="mValueMinLabel">1</span>
-              <span class="text-slate-600 font-medium"
-                >Depth:
-                <span id="mValueDisplay" class="tabular-nums">4</span></span
+              <path
+                fill-rule="evenodd"
+                d="M5.23 7.21a.75.75 0 011.06.02L10 11.186l3.71-3.955a.75.75 0 111.08 1.04l-4.24 4.523a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </button>
+          <div
+            id="controls-summary"
+            class="flex-1 ml-3 text-[10px] font-medium text-slate-500 truncate"
+          ></div>
+        </div>
+        <div id="controls-body" class="p-4 pt-3 sm:pt-4">
+          <div
+            class="flex flex-col sm:flex-row items-center justify-center gap-4"
+          >
+            <div class="w-full sm:w-auto">
+              <label
+                for="mainStringInput"
+                class="block text-xs sm:text-sm font-medium text-slate-700"
+                >Phrase</label
               >
-              <span id="mValueMaxLabel">8</span>
+              <input
+                type="text"
+                id="mainStringInput"
+                value="ORA POR ME"
+                class="mt-1 block w-full sm:w-64 rounded-md border-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm sm:text-base py-1.5"
+              />
+              <label
+                for="phrasePresetSelect"
+                class="mt-2 block text-[10px] sm:text-xs font-medium text-slate-500 tracking-wide"
+                >Presets</label
+              >
+              <select
+                id="phrasePresetSelect"
+                class="mt-1 block w-full sm:w-64 rounded-md border-slate-300 bg-white text-[11px] sm:text-sm py-1.5 pr-6 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              >
+                <option value="">(Choose a preset)</option>
+                <option value="ORA POR ME">ORA POR ME</option>
+                <option value="FLORENTIUM INDIGNUM MEMORARE">
+                  FLORENTIUM INDIGNUM MEMORARE
+                </option>
+                <option value="VIA VERITAS VITA">VIA VERITAS VITA</option>
+                <option value="LUX MUNDI">LUX MUNDI</option>
+                <option value="KYRIE ELEISON">KYRIE ELEISON</option>
+                <option value="DONA NOBIS PACEM">DONA NOBIS PACEM</option>
+              </select>
+            </div>
+            <div class="w-full sm:w-auto">
+              <div class="flex items-center justify-between">
+                <label
+                  for="mValueInput"
+                  class="block text-xs sm:text-sm font-medium text-slate-700"
+                  >Width</label
+                >
+                <span class="hidden sm:inline text-[11px] text-slate-500"
+                  >(<span id="mValueMinLabel">1</span>–<span id="mValueMaxLabel"
+                    >8</span
+                  >)</span
+                >
+              </div>
+              <input
+                type="range"
+                id="mValueInput"
+                min="1"
+                max="8"
+                value="4"
+                step="1"
+                class="mt-2 block w-full sm:w-56 cursor-pointer accent-indigo-600 h-2"
+              />
+              <div
+                class="hidden sm:flex items-center gap-1 mt-1 text-[11px] text-slate-600"
+              >
+                <span class="font-medium">Width:</span>
+                <span id="width-live-value" class="tabular-nums font-semibold"
+                  >4</span
+                >
+              </div>
+              <div
+                class="flex sm:hidden items-center justify-between mt-1 text-[10px] tracking-wide text-slate-500"
+              >
+                <span id="mValueMinLabel_mobile">1</span>
+                <span class="text-slate-600 font-medium"
+                  >Width:
+                  <span id="mValueDisplay" class="tabular-nums">4</span></span
+                >
+                <span id="mValueMaxLabel_mobile">8</span>
+              </div>
+            </div>
+            <div class="w-full sm:w-auto flex sm:block">
+              <button
+                id="generate-btn"
+                class="action-button bg-indigo-600 text-white font-semibold py-2 px-5 rounded-lg shadow-md w-full sm:w-auto text-sm sm:text-base"
+              >
+                Generate
+              </button>
             </div>
           </div>
-          <button
-            id="generate-btn"
-            class="self-end sm:self-center action-button bg-indigo-600 text-white font-bold py-2 px-6 rounded-lg shadow-md mt-2 sm:mt-0"
-          >
-            Generate
-          </button>
         </div>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[75vh]">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:h-[75vh]">
         <!-- Graph Area -->
         <div
+          id="graph-area"
           class="graph-bg border border-slate-300 rounded-xl shadow-lg relative overflow-hidden p-4"
         >
           <svg id="graph-svg" class="w-full h-full">
@@ -202,35 +290,41 @@
             >
               <p id="message-text">Press 'Start' to begin the simulation.</p>
             </div>
-            <div class="flex justify-center gap-4">
-              <button
-                id="start-btn"
-                class="action-button bg-blue-600 text-white font-bold py-2 px-6 rounded-lg shadow-md"
+            <!-- Controls Button Group (vertical stack on small screens, horizontal on larger) -->
+            <div class="relative">
+              <div
+                id="controls-button-bar"
+                class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 w-full"
               >
-                Start
-              </button>
-              <button
-                id="advance-btn"
-                class="action-button bg-green-600 text-white font-bold py-2 px-6 rounded-lg shadow-md"
-                disabled
-              >
-                Advance
-              </button>
-              <button
-                id="backtrack-btn"
-                class="action-button bg-amber-600 text-white font-bold py-2 px-6 rounded-lg shadow-md"
-                disabled
-              >
-                Backtrack
-              </button>
-              <button
-                id="auto-btn"
-                class="action-button bg-purple-600 text-white font-bold py-2 px-6 rounded-lg shadow-md"
-                disabled
-                data-mode="stopped"
-              >
-                Auto
-              </button>
+                <button
+                  id="start-btn"
+                  class="action-button bg-blue-600 text-white font-bold py-2 px-5 sm:px-6 rounded-lg shadow-md text-sm sm:text-base"
+                >
+                  Start
+                </button>
+                <button
+                  id="advance-btn"
+                  class="action-button bg-green-600 text-white font-bold py-2 px-5 sm:px-6 rounded-lg shadow-md text-sm sm:text-base"
+                  disabled
+                >
+                  Advance
+                </button>
+                <button
+                  id="backtrack-btn"
+                  class="action-button bg-amber-600 text-white font-bold py-2 px-5 sm:px-6 rounded-lg shadow-md text-sm sm:text-base"
+                  disabled
+                >
+                  Backtrack
+                </button>
+                <button
+                  id="auto-btn"
+                  class="action-button bg-purple-600 text-white font-bold py-2 px-5 sm:px-6 rounded-lg shadow-md text-sm sm:text-base"
+                  disabled
+                  data-mode="stopped"
+                >
+                  Auto
+                </button>
+              </div>
             </div>
             <div class="flex items-center gap-3 mt-6 justify-center flex-wrap">
               <label
@@ -241,10 +335,10 @@
               <input
                 type="range"
                 id="speed-range"
-                min="100"
+                min="300"
                 max="2000"
                 step="50"
-                value="650"
+                value="500"
                 class="w-48 accent-indigo-600 cursor-pointer"
               />
               <span
@@ -255,6 +349,33 @@
               <span class="text-[10px] uppercase tracking-wide text-slate-400"
                 >(Fast → Slow)</span
               >
+            </div>
+            <!-- Inline quick speed controls (always visible even if top panel collapsed) -->
+            <div
+              id="inline-speed-controls"
+              class="mt-4 flex items-center justify-center gap-3"
+            >
+              <button
+                id="speed-down-btn"
+                type="button"
+                class="action-button bg-slate-500 text-white font-semibold px-2 py-1 rounded shadow text-xs"
+                aria-label="Decrease speed"
+              >
+                +
+              </button>
+              <div class="text-[11px] text-slate-600 tracking-wide">
+                <span class="font-medium">Speed:</span>
+                <span id="speed-inline-display" class="tabular-nums">650</span>
+                ms
+              </div>
+              <button
+                id="speed-up-btn"
+                type="button"
+                class="action-button bg-slate-500 text-white font-semibold px-2 py-1 rounded shadow text-xs"
+                aria-label="Increase speed"
+              >
+                -
+              </button>
             </div>
             <!-- Mobile only notepad toggle -->
             <div class="mt-6 text-center sm:hidden">
@@ -293,6 +414,25 @@
         const mValueDisplay = document.getElementById("mValueDisplay");
         const mValueMinLabel = document.getElementById("mValueMinLabel");
         const mValueMaxLabel = document.getElementById("mValueMaxLabel");
+        const widthLiveValue = document.getElementById("width-live-value");
+        const phrasePresetSelect =
+          document.getElementById("phrasePresetSelect");
+        const controlsPanel = document.getElementById("controls-panel");
+        const toggleControlsBtn = document.getElementById(
+          "toggle-controls-btn"
+        );
+        const controlsBody = document.getElementById("controls-body");
+        const controlsToggleLabel = document.getElementById(
+          "controls-toggle-label"
+        );
+        const controlsChevron = document.getElementById("controls-chevron");
+        const controlsSummary = document.getElementById("controls-summary");
+        const mValueMinLabelMobile = document.getElementById(
+          "mValueMinLabel_mobile"
+        );
+        const mValueMaxLabelMobile = document.getElementById(
+          "mValueMaxLabel_mobile"
+        );
 
         const currentPathEl = document.getElementById("current-path");
         const finalPathsEl = document.getElementById("final-paths");
@@ -379,11 +519,12 @@
           if (!result) {
             svg.innerHTML = "";
             showMessage(
-              "Error: Invalid input. Please check the string and 'm' value."
+              "Error: Invalid input. Please check the phrase and width value."
             );
             startBtn.disabled = true;
             advanceBtn.disabled = true;
             backtrackBtn.disabled = true;
+            autoBtn.disabled = true;
             return;
           }
 
@@ -399,6 +540,7 @@
 
           state = initializeState();
           drawMatrixGrid();
+          adjustGraphSize();
 
           currentPathEl.innerHTML = "";
           finalPathsEl.innerHTML = "";
@@ -406,10 +548,11 @@
           tracerToken.setAttribute("cx", "-100");
           tracerToken.setAttribute("cy", "-100");
 
-          showMessage("New matrix generated. Press 'Start' to begin.");
+          showMessage("New matrix generated. You can press 'Start' or 'Auto'.");
           startBtn.disabled = false;
           advanceBtn.disabled = true;
           backtrackBtn.disabled = true;
+          autoBtn.disabled = false;
           updateUI();
         }
 
@@ -475,6 +618,19 @@
           svg.appendChild(tracerToken);
         }
 
+        function adjustGraphSize() {
+          const graphArea = document.getElementById("graph-area");
+          if (!graphArea || !numRows || !numCols) return;
+          // Minimum pixel size per cell to keep letters legible
+          const minCellSize = 56; // px
+          const verticalPadding = 32; // account for internal padding / borders
+          const targetMinHeight = Math.max(
+            numRows * minCellSize + verticalPadding,
+            340
+          );
+          graphArea.style.minHeight = targetMinHeight + "px";
+        }
+
         function moveToken(node) {
           if (!node || !cellPositions[node]) return;
           const pos = cellPositions[node];
@@ -535,7 +691,7 @@
             autoBtn.classList.add("bg-rose-600");
             autoBtn.dataset.mode = "running";
           } else {
-            autoBtn.disabled = state.isFinished || !state.isStarted;
+            autoBtn.disabled = state.isFinished; // allow before manual start
             autoBtn.textContent = "Auto";
             autoBtn.classList.remove("bg-rose-600");
             autoBtn.classList.add("bg-purple-600");
@@ -560,6 +716,13 @@
               ? "Show Notepad"
               : "Hide Notepad";
             toggleNotepadBtn.setAttribute("aria-expanded", String(!hidden));
+          }
+          // Update controls summary for mobile
+          if (controlsSummary && window.innerWidth < 640) {
+            const phrase = mainStringInput.value.trim().replace(/\s+/g, " ");
+            controlsSummary.textContent = `${phrase || "(no phrase)"} · w=${
+              mValueInput.value
+            }`;
           }
         }
 
@@ -766,9 +929,9 @@
         generateBtn.addEventListener("click", () => {
           ensureStopAutoBeforeReset();
           const newString = mainStringInput.value.trim().toUpperCase();
-          const newM = parseInt(mValueInput.value);
-          const cleanLen = newString.replace(/\s/g, "").length;
 
+          const cleanLen = newString.replace(/\s/g, "").length;
+          const newM = cleanLen - parseInt(mValueInput.value) + 1;
           if (!newString) {
             showMessage("Error: String cannot be empty.");
             return;
@@ -801,6 +964,10 @@
           if (state.isAutoRunning) {
             stopAuto();
           } else {
+            // If simulation not started yet, initialize first
+            if (!state.isStarted) {
+              handleStart();
+            }
             startAuto();
           }
         });
@@ -815,6 +982,7 @@
             mValueDisplay.textContent = 0;
             mValueMinLabel.textContent = 0;
             mValueMaxLabel.textContent = 0;
+            if (widthLiveValue) widthLiveValue.textContent = 0;
             return;
           }
           // Maintain current value or clamp
@@ -827,22 +995,53 @@
           mValueDisplay.textContent = current;
           mValueMinLabel.textContent = "1";
           mValueMaxLabel.textContent = String(cleanLen);
+          if (widthLiveValue) widthLiveValue.textContent = current;
         }
 
         mValueInput.addEventListener("input", () => {
           mValueDisplay.textContent = mValueInput.value;
+          if (widthLiveValue) widthLiveValue.textContent = mValueInput.value;
+          if (mValueMinLabelMobile)
+            mValueMinLabelMobile.textContent = mValueMinLabel.textContent;
+          if (mValueMaxLabelMobile)
+            mValueMaxLabelMobile.textContent = mValueMaxLabel.textContent;
+          updateUI();
         });
         mainStringInput.addEventListener("input", () => {
           // Uppercase transform live (optional) - keep natural typing but we uppercase on generate
           updateWidthSliderBounds();
+          updateUI();
         });
+        if (phrasePresetSelect) {
+          phrasePresetSelect.addEventListener("change", () => {
+            const v = phrasePresetSelect.value;
+            if (v) {
+              mainStringInput.value = v;
+              updateWidthSliderBounds();
+              // If current width exceeds new max, clamp display
+              if (
+                parseInt(mValueInput.value, 10) > parseInt(mValueInput.max, 10)
+              ) {
+                mValueInput.value = mValueInput.max;
+                mValueDisplay.textContent = mValueInput.value;
+              }
+              updateUI();
+            }
+          });
+        }
         // Initialize slider bounds at load
         updateWidthSliderBounds();
 
-        // Speed slider logic
+        // Speed slider + inline buttons logic
+        const speedInlineDisplay = document.getElementById(
+          "speed-inline-display"
+        );
+        const speedDownBtn = document.getElementById("speed-down-btn");
+        const speedUpBtn = document.getElementById("speed-up-btn");
         function applySpeedChange(newVal) {
           autoStepMs = newVal;
           speedDisplay.textContent = `${autoStepMs} ms`;
+          if (speedInlineDisplay) speedInlineDisplay.textContent = autoStepMs;
           // If auto is running, restart interval with new speed
           if (state.isAutoRunning) {
             if (autoIntervalId) clearInterval(autoIntervalId);
@@ -853,6 +1052,23 @@
           const v = parseInt(e.target.value, 10);
           if (!isNaN(v)) applySpeedChange(v);
         });
+        if (speedDownBtn && speedUpBtn) {
+          const step = parseInt(speedRange.step, 10) || 50;
+          speedDownBtn.addEventListener("click", () => {
+            let v = parseInt(speedRange.value, 10) - step;
+            const min = parseInt(speedRange.min, 10);
+            if (v < min) v = min;
+            speedRange.value = v;
+            applySpeedChange(v);
+          });
+          speedUpBtn.addEventListener("click", () => {
+            let v = parseInt(speedRange.value, 10) + step;
+            const max = parseInt(speedRange.max, 10);
+            if (v > max) v = max;
+            speedRange.value = v;
+            applySpeedChange(v);
+          });
+        }
         // Initialize display
         applySpeedChange(parseInt(speedRange.value, 10));
 
@@ -889,8 +1105,53 @@
         }
         window.addEventListener("resize", () => {
           applyMobileLayout();
+          adjustGraphSize();
         });
         applyMobileLayout();
+        adjustGraphSize();
+
+        // --- Mobile controls collapse logic ---
+        function setControlsCollapsed(collapsed) {
+          if (!controlsPanel) return;
+          if (collapsed) {
+            controlsPanel.classList.add("controls-collapsed");
+            if (toggleControlsBtn)
+              toggleControlsBtn.setAttribute("aria-expanded", "false");
+            if (controlsToggleLabel) controlsToggleLabel.textContent = "Show";
+            if (controlsChevron)
+              controlsChevron.style.transform = "rotate(0deg)";
+          } else {
+            controlsPanel.classList.remove("controls-collapsed");
+            if (toggleControlsBtn)
+              toggleControlsBtn.setAttribute("aria-expanded", "true");
+            if (controlsToggleLabel) controlsToggleLabel.textContent = "Hide";
+            if (controlsChevron)
+              controlsChevron.style.transform = "rotate(180deg)";
+          }
+        }
+        function initControlsCollapse() {
+          if (window.innerWidth < 640) {
+            setControlsCollapsed(true);
+          } else {
+            setControlsCollapsed(false);
+          }
+          updateUI();
+        }
+        if (toggleControlsBtn) {
+          toggleControlsBtn.addEventListener("click", () => {
+            const collapsed =
+              controlsPanel.classList.contains("controls-collapsed");
+            setControlsCollapsed(!collapsed);
+            updateUI();
+          });
+        }
+        window.addEventListener("resize", () => {
+          if (window.innerWidth >= 640) {
+            setControlsCollapsed(false);
+          }
+          updateUI();
+        });
+        initControlsCollapse();
       });
     </script>
     <footer
