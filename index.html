@@ -15,6 +15,8 @@
         overscroll-behavior: none;
       }
       .notepad {
+        display: none;
+        visibility: hidden;
         font-family: "Ketem", cursive;
         background-color: #fefabc;
         background-image: linear-gradient(
@@ -179,6 +181,8 @@
                 <option value="VIA VERITAS VITA">VIA VERITAS VITA</option>
                 <option value="LUX MUNDI">LUX MUNDI</option>
                 <option value="KYRIE ELEISON">KYRIE ELEISON</option>
+                <option value="KYΡΙΕ ἘΛΈΗΣΟΝ">KYΡΙΕ ἘΛΈΗΣΟΝ</option>
+                <option value="ΚΞΧΥΤΘΕΜΤΑ">ΚΞΧΥΤΘΕΜΤΑ</option>
                 <option value="DONA NOBIS PACEM">DONA NOBIS PACEM</option>
               </select>
             </div>
@@ -212,6 +216,11 @@
                   >4</span
                 >
               </div>
+              <div
+                class="mt-1 text-[10px] sm:text-[11px] text-indigo-600 font-medium"
+                id="total-paths-display"
+                aria-live="polite"
+              ></div>
               <div
                 class="flex sm:hidden items-center justify-between mt-1 text-[10px] tracking-wide text-slate-500"
               >
@@ -631,6 +640,34 @@
           graphArea.style.minHeight = targetMinHeight + "px";
         }
 
+        // ------------------------------------------------------------
+        // Total number of monotonic (down/right) paths in an m x n grid
+        // from (1,1) to (m,n) is C((m-1)+(n-1), m-1).
+        // Here m = number of rows, n = number of columns.
+        // We use BigInt to avoid overflow and return a Number when safe.
+        // ------------------------------------------------------------
+        function binomialBigInt(n, k) {
+          n = BigInt(n);
+          k = BigInt(k);
+          if (k < 0n || k > n) return 0n;
+          if (k > n - k) k = n - k; // symmetry
+          let result = 1n;
+          for (let i = 1n; i <= k; i++) {
+            result = (result * (n - k + i)) / i;
+          }
+          return result;
+        }
+
+        function totalGridPaths(m, n, opts = {}) {
+          if (m <= 0 || n <= 0) return opts.asBigInt ? 0n : 0;
+          const steps = m - 1 + (n - 1);
+          const choose = m - 1; // could also use n - 1
+          const value = binomialBigInt(steps, choose);
+          if (opts.asBigInt) return value;
+          const MAX_SAFE = BigInt(Number.MAX_SAFE_INTEGER);
+          return value <= MAX_SAFE ? Number(value) : value; // fallback BigInt if too large
+        }
+
         function moveToken(node) {
           if (!node || !cellPositions[node]) return;
           const pos = cellPositions[node];
@@ -983,6 +1020,7 @@
             mValueMinLabel.textContent = 0;
             mValueMaxLabel.textContent = 0;
             if (widthLiveValue) widthLiveValue.textContent = 0;
+            updateTotalPathsDisplay(0, 0);
             return;
           }
           // Maintain current value or clamp
@@ -996,6 +1034,28 @@
           mValueMinLabel.textContent = "1";
           mValueMaxLabel.textContent = String(cleanLen);
           if (widthLiveValue) widthLiveValue.textContent = current;
+          // For current UI semantics: width slider value is "m" (# rows), columns = cleanLen - m + 1
+          const mRows = current;
+          const nCols = cleanLen - current + 1;
+          updateTotalPathsDisplay(mRows, nCols);
+        }
+
+        function formatBigIntCompact(val) {
+          if (typeof val === "number") return val.toLocaleString();
+          const s = val.toString();
+          if (s.length <= 12) return s.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+          // scientific-ish
+          return s[0] + "." + s.slice(1, 4) + "e+" + (s.length - 1);
+        }
+
+        function updateTotalPathsDisplay(mRows, nCols) {
+          const el = document.getElementById("total-paths-display");
+          if (!el || mRows <= 0 || nCols <= 0) {
+            if (el) el.textContent = "";
+            return;
+          }
+          const paths = totalGridPaths(mRows, nCols, { asBigInt: true });
+          el.textContent = `Paths: ${formatBigIntCompact(paths)}`;
         }
 
         mValueInput.addEventListener("input", () => {
@@ -1006,6 +1066,14 @@
           if (mValueMaxLabelMobile)
             mValueMaxLabelMobile.textContent = mValueMaxLabel.textContent;
           updateUI();
+          // Recompute paths on width change
+          const cleanLen = mainStringInput.value.replace(/\s/g, "").length;
+          const current = parseInt(mValueInput.value, 10);
+          if (cleanLen > 0 && current > 0) {
+            const mRows = current;
+            const nCols = cleanLen - current + 1;
+            updateTotalPathsDisplay(mRows, nCols);
+          }
         });
         mainStringInput.addEventListener("input", () => {
           // Uppercase transform live (optional) - keep natural typing but we uppercase on generate
@@ -1026,6 +1094,7 @@
                 mValueDisplay.textContent = mValueInput.value;
               }
               updateUI();
+              // Paths display updated inside updateWidthSliderBounds already
             }
           });
         }
