@@ -1,0 +1,1223 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="appTitle">Labyrinth Generator</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+      /* Custom styles to mirror the React behavior */
+      body {
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          "Helvetica Neue",
+          Arial,
+          sans-serif;
+      }
+      .touch-none {
+        touch-action: none;
+      }
+
+      /* Print Styles */
+      @media print {
+        body {
+          display: block !important;
+          background: white !important;
+          min-height: 0 !important;
+          height: 100vh !important;
+        }
+        .print-hidden {
+          display: none !important;
+        }
+        .print-p-0 {
+          padding: 0 !important;
+        }
+        .print-bg-none {
+          background-image: none !important;
+          background-color: transparent !important;
+        }
+        .print-shadow-none {
+          box-shadow: none !important;
+        }
+        .print-max-h-full {
+          max-height: 100vh !important;
+        }
+        .print-max-w-full {
+          max-width: 100% !important;
+        }
+        .print-m-auto {
+          margin: auto !important;
+        }
+        .print-border-none {
+          border: none !important;
+        }
+        .print-h-full {
+          height: 100% !important;
+        }
+      }
+    </style>
+  </head>
+  <body
+    class="min-h-screen bg-stone-200 text-stone-900 font-sans flex flex-col md:flex-row print-block print-bg-white print-min-h-0 print-h-screen"
+  >
+    <!-- Sidebar Controls -->
+    <div
+      class="w-full md:w-80 bg-stone-100 border-r border-stone-300 shadow-xl z-10 flex flex-col max-h-screen overflow-y-auto print-hidden"
+    >
+      <div class="p-6 border-b border-stone-300 bg-stone-50">
+        <div class="flex justify-end mb-4">
+          <select
+            id="lang-select"
+            class="px-2 py-1 bg-stone-200 border border-stone-300 rounded text-xs text-stone-700 focus:outline-none focus:ring-1 focus:ring-amber-600 font-medium"
+          >
+            <option value="en">English</option>
+            <option value="es">Español</option>
+            <option value="ca">Català</option>
+          </select>
+        </div>
+        <h1
+          class="text-2xl font-bold tracking-tight text-stone-800 flex items-center gap-2"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="text-stone-600"
+          >
+            <path d="M20 7h-9" />
+            <path d="M14 17H5" />
+            <circle cx="17" cy="17" r="3" />
+            <circle cx="5" cy="7" r="3" />
+          </svg>
+          <span data-i18n="appTitle">Labyrinth Generator</span>
+        </h1>
+        <p class="text-sm text-stone-500 mt-2" data-i18n="appSubtitle">
+          In the style of Florentius of Valeránica
+        </p>
+      </div>
+
+      <div class="p-6 flex-1 flex flex-col gap-8">
+        <!-- Dimensions -->
+        <div class="space-y-4">
+          <h2
+            class="text-sm font-bold uppercase tracking-wider text-stone-500 flex items-center gap-2"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="22" x2="2" y1="6" y2="6" />
+              <line x1="22" x2="2" y1="18" y2="18" />
+              <line x1="6" x2="6" y1="2" y2="22" />
+              <line x1="18" x2="18" y1="2" y2="22" />
+            </svg>
+            <span data-i18n="dimensions">Dimensions</span>
+          </h2>
+          <div class="space-y-4">
+            <div>
+              <label
+                class="block text-sm font-medium text-stone-700 mb-1"
+                data-i18n="colsLabel"
+              >
+                Columns (White Diamonds)
+              </label>
+              <div class="flex items-center gap-2">
+                <button
+                  id="cols-minus"
+                  class="w-8 h-8 flex items-center justify-center rounded bg-stone-200 hover:bg-stone-300 text-stone-700 transition-colors"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <line x1="5" x2="19" y1="12" y2="12" />
+                  </svg>
+                </button>
+                <input
+                  type="number"
+                  id="cols-input"
+                  min="1"
+                  max="40"
+                  value="5"
+                  class="flex-1 text-center px-3 py-1.5 border border-stone-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-600 focus:border-amber-600 bg-white m-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                />
+                <button
+                  id="cols-plus"
+                  class="w-8 h-8 flex items-center justify-center rounded bg-stone-200 hover:bg-stone-300 text-stone-700 transition-colors"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <line x1="12" x2="12" y1="5" y2="19" />
+                    <line x1="5" x2="19" y1="12" y2="12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div>
+              <label
+                class="block text-sm font-medium text-stone-700 mb-1"
+                data-i18n="rowsLabel"
+              >
+                Rows (White Diamonds)
+              </label>
+              <div class="flex items-center gap-2">
+                <button
+                  id="rows-minus"
+                  class="w-8 h-8 flex items-center justify-center rounded bg-stone-200 hover:bg-stone-300 text-stone-700 transition-colors"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <line x1="5" x2="19" y1="12" y2="12" />
+                  </svg>
+                </button>
+                <input
+                  type="number"
+                  id="rows-input"
+                  min="1"
+                  max="40"
+                  value="10"
+                  class="flex-1 text-center px-3 py-1.5 border border-stone-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-600 focus:border-amber-600 bg-white m-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                />
+                <button
+                  id="rows-plus"
+                  class="w-8 h-8 flex items-center justify-center rounded bg-stone-200 hover:bg-stone-300 text-stone-700 transition-colors"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <line x1="12" x2="12" y1="5" y2="19" />
+                    <line x1="5" x2="19" y1="12" y2="12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phrase Overlay -->
+        <div class="space-y-4">
+          <h2
+            class="text-sm font-bold uppercase tracking-wider text-stone-500 flex items-center gap-2"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="4 7 4 4 20 4 20 7" />
+              <line x1="9" x2="15" y1="20" y2="20" />
+              <line x1="12" x2="12" y1="4" y2="20" />
+            </svg>
+            <span data-i18n="textOverlay">Text Overlay</span>
+          </h2>
+          <div>
+            <label
+              class="block text-sm font-medium text-stone-700 mb-1"
+              for="phrase-input"
+              data-i18n="intentionLabel"
+            >
+              Intention
+            </label>
+            <input
+              type="text"
+              id="phrase-input"
+              data-i18n-placeholder="intentionPlaceholder"
+              placeholder="e.g. Pray for me"
+              class="w-full px-3 py-2 border border-stone-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-600 focus:border-amber-600 bg-white"
+            />
+            <p
+              class="text-[11px] text-stone-500 mt-1"
+              data-i18n="intentionHelp"
+            >
+              Non-letters are ignored. Maps to white rows.
+            </p>
+          </div>
+          <div>
+            <label
+              class="block text-sm font-medium text-stone-700 mb-1"
+              for="font-select"
+              data-i18n="overlayFontLabel"
+            >
+              Overlay Font
+            </label>
+            <select
+              id="font-select"
+              class="w-full px-3 py-2 border border-stone-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-600 focus:border-amber-600 bg-white"
+            >
+              <option value="Georgia, serif">Georgia</option>
+              <option value="'Times New Roman', Times, serif">
+                Times New Roman
+              </option>
+              <option value="'Lucida Bright', 'Lucida Serif', Lucida, serif">
+                Lucida
+              </option>
+              <option value="Garamond, serif">Garamond</option>
+              <option
+                value="'Palatino Linotype', 'Book Antiqua', Palatino, serif"
+              >
+                Palatino
+              </option>
+              <option value="'Courier New', Courier, monospace">
+                Courier (Monospace)
+              </option>
+              <option value="Arial, sans-serif">Arial (Sans-Serif)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Styling -->
+        <div class="space-y-4">
+          <div class="flex justify-between items-end">
+            <h2
+              class="text-sm font-bold uppercase tracking-wider text-stone-500 flex items-center gap-2"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+                <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+                <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
+                <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+                <path
+                  d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.836-.437-1.124-.298-.336-.498-.75-.498-1.2 0-.984.814-1.8 1.8-1.8h2.813c2.8 0 5-2.2 5-5 0-4.418-4.03-8-9-8Z"
+                />
+              </svg>
+              <span data-i18n="paletteStyle">Palette & Style</span>
+            </h2>
+            <span
+              id="selection-count"
+              class="text-xs font-semibold px-2 py-1 bg-stone-200 text-stone-600 rounded-full"
+              >0 Selected</span
+            >
+          </div>
+
+          <div class="flex items-center justify-between">
+            <label
+              class="text-sm font-medium text-stone-700 cursor-pointer select-none"
+              for="clip-toggle"
+              data-i18n="includeBorder"
+            >
+              Include Border?
+            </label>
+            <div
+              class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in"
+            >
+              <input
+                type="checkbox"
+                id="clip-toggle"
+                class="absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer transition-transform duration-200 ease-in-out"
+                style="transform: translateX(0); border-color: #d6d3d1"
+              />
+              <label
+                id="toggle-label"
+                for="clip-toggle"
+                class="block overflow-hidden h-5 rounded-full bg-stone-300 cursor-pointer transition-colors duration-200 ease-in-out"
+              ></label>
+            </div>
+          </div>
+
+          <p class="text-xs text-stone-500 italic mt-2" data-i18n="instruction">
+            Drag across diamonds or borders to select them, then click a color
+            below to paint.
+          </p>
+
+          <div id="color-palette-container" class="grid grid-cols-4 gap-2 pt-2">
+            <!-- Palette generated dynamically -->
+          </div>
+
+          <button
+            id="clear-selection-btn"
+            class="hidden w-full text-xs text-stone-500 hover:text-stone-800 transition-colors py-1 bg-stone-200/50 rounded"
+            data-i18n="clearSelection"
+          >
+            Clear Selection
+          </button>
+
+          <button
+            id="regen-btn"
+            class="w-full mt-2 flex items-center justify-center gap-2 py-2 px-4 bg-stone-200 hover:bg-stone-300 text-stone-800 rounded-md font-medium transition-colors text-sm border border-stone-300"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+              <path d="M3 3v5h5" />
+              <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+              <path d="M16 21v-5h5" />
+            </svg>
+            <span data-i18n="regenerate">Regenerate Pattern</span>
+          </button>
+
+          <div class="grid grid-cols-2 gap-2 mt-2">
+            <button
+              id="download-svg-btn"
+              class="w-full flex items-center justify-center gap-2 py-2 px-4 bg-stone-200 hover:bg-stone-300 text-stone-800 rounded-md font-medium transition-colors text-sm border border-stone-300 shadow-sm"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" x2="12" y1="15" y2="3" />
+              </svg>
+              SVG
+            </button>
+
+            <button
+              id="download-png-btn"
+              class="w-full flex items-center justify-center gap-2 py-2 px-4 bg-amber-600 hover:bg-amber-700 disabled:bg-amber-400 text-white rounded-md font-medium transition-colors text-sm border border-amber-800 shadow-sm"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+                <circle cx="9" cy="9" r="2" />
+                <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+              </svg>
+              <span id="png-btn-text" data-i18n="png">PNG</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Canvas Area -->
+    <div
+      class="flex-1 flex items-center justify-center p-8 bg-[#e5dfd3] relative overflow-hidden print-p-0 print-bg-none print-block print-h-screen"
+      style="
+        background-image: url(&quot;https://www.transparenttextures.com/patterns/parchment.png&quot;);
+      "
+    >
+      <!-- Dynamic Canvas Container -->
+      <div
+        id="canvas-container"
+        class="relative flex items-center justify-center transition-all duration-500 max-w-full max-h-full print-max-h-full print-border-none print-shadow-none print-m-auto print-h-full shadow-2xl"
+      >
+        <svg
+          id="matrix-svg"
+          xmlns="http://www.w3.org/2000/svg"
+          class="w-full h-full transition-all duration-300 touch-none print-max-h-full print-max-w-full print-shadow-none"
+        >
+          <g id="borders-group"></g>
+
+          <defs>
+            <clipPath id="manuscript-clip">
+              <rect id="manuscript-clip-rect" />
+            </clipPath>
+          </defs>
+
+          <g id="grid-group"></g>
+          <g id="text-group" class="pointer-events-none select-none"></g>
+          <g
+            id="highlight-group"
+            class="pointer-events-none drop-shadow-md print-hidden"
+          ></g>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Application Logic -->
+    <script>
+      // --- Translations ---
+      const translations = {
+        en: {
+          appTitle: "Labyrinth Generator",
+          appSubtitle: "In the style of Florentius of Valeránica",
+          dimensions: "Dimensions",
+          colsLabel: "Columns (White Diamonds)",
+          rowsLabel: "Rows (White Diamonds)",
+          textOverlay: "Text Overlay",
+          intentionLabel: "Intention",
+          intentionPlaceholder: "e.g. Pray for me",
+          intentionHelp: "Non-letters are ignored. Maps to white rows.",
+          overlayFontLabel: "Overlay Font",
+          paletteStyle: "Palette & Style",
+          includeBorder: "Include Border?",
+          instruction:
+            "Drag across diamonds or borders to select them, then click a color below to paint.",
+          clearSelection: "Clear Selection",
+          regenerate: "Regenerate Pattern",
+          selected: "Selected",
+          edit: "Edit",
+          wait: "Wait...",
+          png: "PNG",
+        },
+        es: {
+          appTitle: "Generador de Laberintos",
+          appSubtitle: "Al estilo de Florencio de Valeránica",
+          dimensions: "Dimensiones",
+          colsLabel: "Columnas (Diamantes Blancos)",
+          rowsLabel: "Filas (Diamantes Blancos)",
+          textOverlay: "Superposición de Texto",
+          intentionLabel: "Intención",
+          intentionPlaceholder: "ej. Reza por mí",
+          intentionHelp:
+            "Se ignoran caracteres no alfabéticos. Se asigna a filas blancas.",
+          overlayFontLabel: "Fuente de Superposición",
+          paletteStyle: "Paleta y Estilo",
+          includeBorder: "¿Incluir Borde?",
+          instruction:
+            "Arrastra sobre los diamantes o bordes para seleccionarlos, luego haz clic en un color abajo para pintar.",
+          clearSelection: "Borrar Selección",
+          regenerate: "Regenerar Patrón",
+          selected: "Seleccionado(s)",
+          edit: "Editar",
+          wait: "Espera...",
+          png: "PNG",
+        },
+        ca: {
+          appTitle: "Generador de Laberints",
+          appSubtitle: "A l'estil de Florenci de Valerànica",
+          dimensions: "Dimensions",
+          colsLabel: "Columnes (Diamants Blancs)",
+          rowsLabel: "Files (Diamants Blancs)",
+          textOverlay: "Superposició de Text",
+          intentionLabel: "Intenció",
+          intentionPlaceholder: "ex. Prega per mi",
+          intentionHelp:
+            "S'ignoren els caràcters no alfabètics. S'assigna a files blanques.",
+          overlayFontLabel: "Font de Superposició",
+          paletteStyle: "Paleta i Estil",
+          includeBorder: "Incloure Vora?",
+          instruction:
+            "Arrossega sobre els diamants o vores per seleccionar-los, després fes clic a un color a sota per pintar.",
+          clearSelection: "Esborrar Selecció",
+          regenerate: "Regenerar Patró",
+          selected: "Seleccionat(s)",
+          edit: "Editar",
+          wait: "Espera...",
+          png: "PNG",
+        },
+      };
+
+      // --- State ---
+      let currentLang = "en";
+      let whiteCols = 5;
+      let whiteRows = 10;
+      let gridCols = whiteCols + 1;
+      let gridRows = whiteRows * 2 + 1;
+
+      let clipEdges = false;
+      let colors = ["#7f1d1d", "#b45309", "#17192b", "#f4ece1"];
+      let gridData = [];
+      let selectedIndices = new Set();
+      let phrase = "";
+      let currentFont = "Georgia, serif";
+
+      let isDragging = false;
+      let dragMode = null;
+
+      let borderColors = {
+        outer: "#d9853b",
+        inner: "#2b1414",
+        padding: "#1a0f0f",
+      };
+
+      const d = 50;
+      const halfD = d / 2;
+
+      // --- DOM Elements ---
+      const langSelect = document.getElementById("lang-select");
+      const colsInput = document.getElementById("cols-input");
+      const rowsInput = document.getElementById("rows-input");
+      const phraseInput = document.getElementById("phrase-input");
+      const fontSelect = document.getElementById("font-select");
+
+      const colsMinus = document.getElementById("cols-minus");
+      const colsPlus = document.getElementById("cols-plus");
+      const rowsMinus = document.getElementById("rows-minus");
+      const rowsPlus = document.getElementById("rows-plus");
+
+      const clipToggle = document.getElementById("clip-toggle");
+      const toggleLabel = document.getElementById("toggle-label");
+
+      const selectionCount = document.getElementById("selection-count");
+      const clearSelectionBtn = document.getElementById("clear-selection-btn");
+      const colorPaletteContainer = document.getElementById(
+        "color-palette-container",
+      );
+
+      const canvasContainer = document.getElementById("canvas-container");
+      const matrixSvg = document.getElementById("matrix-svg");
+      const bordersGroup = document.getElementById("borders-group");
+      const manuscriptClipRect = document.getElementById(
+        "manuscript-clip-rect",
+      );
+      const gridGroup = document.getElementById("grid-group");
+      const textGroup = document.getElementById("text-group");
+      const highlightGroup = document.getElementById("highlight-group");
+
+      // --- Initialization ---
+      function init() {
+        // Language Handler
+        langSelect.addEventListener("change", (e) => {
+          currentLang = e.target.value;
+          updateLanguage();
+        });
+
+        // Dimension Handlers
+        const updateCols = (val) => {
+          let newVal = Math.max(1, Math.min(40, val));
+          if (isNaN(newVal)) newVal = whiteCols;
+          whiteCols = newVal;
+          colsInput.value = whiteCols;
+          gridCols = whiteCols + 1;
+          generateGrid();
+        };
+
+        const updateRows = (val) => {
+          let newVal = Math.max(1, Math.min(40, val));
+          if (isNaN(newVal)) newVal = whiteRows;
+          whiteRows = newVal;
+          rowsInput.value = whiteRows;
+          gridRows = whiteRows * 2 + 1;
+          generateGrid();
+        };
+
+        colsInput.addEventListener("change", (e) =>
+          updateCols(parseInt(e.target.value)),
+        );
+        colsMinus.addEventListener("click", () => updateCols(whiteCols - 1));
+        colsPlus.addEventListener("click", () => updateCols(whiteCols + 1));
+
+        rowsInput.addEventListener("change", (e) =>
+          updateRows(parseInt(e.target.value)),
+        );
+        rowsMinus.addEventListener("click", () => updateRows(whiteRows - 1));
+        rowsPlus.addEventListener("click", () => updateRows(whiteRows + 1));
+
+        phraseInput.addEventListener("input", (e) => {
+          phrase = e.target.value.replace(/[^\p{L}]/gu, "").toUpperCase();
+          renderText();
+        });
+        fontSelect.addEventListener("change", (e) => {
+          currentFont = e.target.value;
+          renderText();
+        });
+        clipToggle.addEventListener("change", (e) => {
+          clipEdges = e.target.checked;
+          updateClipToggleVisuals();
+          renderLayout();
+        });
+
+        document
+          .getElementById("regen-btn")
+          .addEventListener("click", generateGrid);
+        document
+          .getElementById("download-svg-btn")
+          .addEventListener("click", handleDownloadSVG);
+        document
+          .getElementById("download-png-btn")
+          .addEventListener("click", handleDownloadPNG);
+        clearSelectionBtn.addEventListener("click", () => {
+          selectedIndices.clear();
+          updateSelectionUI();
+          renderHighlights();
+        });
+
+        matrixSvg.addEventListener("pointerdown", handlePointerDown);
+        matrixSvg.addEventListener("pointerover", handlePointerOver);
+
+        window.addEventListener("pointerup", () => {
+          isDragging = false;
+          dragMode = null;
+        });
+        window.addEventListener("touchend", () => {
+          isDragging = false;
+          dragMode = null;
+        });
+
+        // Initial Render
+        updateLanguage();
+        generateGrid();
+        updateClipToggleVisuals();
+      }
+
+      function updateLanguage() {
+        // Document Title
+        document.title = translations[currentLang].appTitle;
+
+        // Simple text elements
+        document.querySelectorAll("[data-i18n]").forEach((el) => {
+          const key = el.getAttribute("data-i18n");
+          if (translations[currentLang][key]) {
+            el.textContent = translations[currentLang][key];
+          }
+        });
+
+        // Input placeholders
+        document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+          const key = el.getAttribute("data-i18n-placeholder");
+          if (translations[currentLang][key]) {
+            el.placeholder = translations[currentLang][key];
+          }
+        });
+
+        // Dynamic text updates
+        updateSelectionUI();
+        renderPalette();
+      }
+
+      // --- Core Logic ---
+      function generateGrid() {
+        gridData = [];
+        for (let i = 0; i < gridCols * gridRows; i++) {
+          const row = Math.floor(i / gridCols);
+          if (row % 2 !== 0) {
+            gridData.push(3);
+          } else {
+            gridData.push(Math.floor(Math.random() * 3));
+          }
+        }
+        selectedIndices.clear();
+        updateSelectionUI();
+        renderLayout();
+      }
+
+      function getViewBoxInfo() {
+        if (clipEdges) {
+          const hMargin = d / 4;
+          const innerX = halfD - hMargin;
+          const innerY = halfD;
+          const innerW = (gridCols - 1) * d + hMargin * 2;
+          const innerH = (gridRows - 1) * halfD;
+
+          const pad = 12;
+          const thick = 16;
+          const ring = 6;
+          const totalPadding = pad + thick + ring;
+
+          return {
+            x: innerX - totalPadding,
+            y: innerY - totalPadding,
+            width: innerW + totalPadding * 2,
+            height: innerH + totalPadding * 2,
+            inner: { x: innerX, y: innerY, w: innerW, h: innerH },
+            borders: { pad, thick, ring },
+          };
+        } else {
+          return {
+            x: 0,
+            y: 0,
+            width: gridCols * d,
+            height: (gridRows - 1) * halfD + d,
+            inner: null,
+          };
+        }
+      }
+
+      // --- Rendering ---
+      function renderLayout() {
+        const vb = getViewBoxInfo();
+
+        matrixSvg.setAttribute(
+          "viewBox",
+          `${vb.x} ${vb.y} ${vb.width} ${vb.height}`,
+        );
+
+        canvasContainer.style.aspectRatio = clipEdges
+          ? `${vb.width} / ${vb.height}`
+          : "auto";
+        if (clipEdges) {
+          canvasContainer.classList.add("shadow-2xl");
+          matrixSvg.classList.remove("drop-shadow-xl");
+          matrixSvg.style.maxHeight = "100%";
+          matrixSvg.style.maxWidth = "100%";
+          gridGroup.setAttribute("clip-path", "url(#manuscript-clip)");
+          textGroup.setAttribute("clip-path", "url(#manuscript-clip)");
+        } else {
+          canvasContainer.classList.remove("shadow-2xl");
+          matrixSvg.classList.add("drop-shadow-xl");
+          matrixSvg.style.maxHeight = "85vh";
+          matrixSvg.style.maxWidth = "85vw";
+          gridGroup.removeAttribute("clip-path");
+          textGroup.removeAttribute("clip-path");
+        }
+
+        bordersGroup.innerHTML = "";
+        if (clipEdges && vb.inner) {
+          const b = vb.borders;
+          const inner = vb.inner;
+
+          bordersGroup.innerHTML = `
+                    <rect data-border="outer" class="cursor-pointer transition-colors duration-150 ease-in-out hover:opacity-80" x="${inner.x - b.pad - b.thick - b.ring}" y="${inner.y - b.pad - b.thick - b.ring}"
+                          width="${inner.w + (b.pad + b.thick + b.ring) * 2}" height="${inner.h + (b.pad + b.thick + b.ring) * 2}" fill="${borderColors.outer}" />
+                    <rect data-border="inner" class="cursor-pointer transition-colors duration-150 ease-in-out hover:opacity-80" x="${inner.x - b.pad - b.thick}" y="${inner.y - b.pad - b.thick}"
+                          width="${inner.w + (b.pad + b.thick) * 2}" height="${inner.h + (b.pad + b.thick) * 2}" fill="${borderColors.inner}" />
+                    <rect data-border="padding" class="cursor-pointer transition-colors duration-150 ease-in-out hover:opacity-80" x="${inner.x - b.pad}" y="${inner.y - b.pad}"
+                          width="${inner.w + b.pad * 2}" height="${inner.h + b.pad * 2}" fill="${borderColors.padding}" />
+                `;
+
+          manuscriptClipRect.setAttribute("x", halfD);
+          manuscriptClipRect.setAttribute("y", halfD);
+          manuscriptClipRect.setAttribute("width", (gridCols - 1) * d);
+          manuscriptClipRect.setAttribute("height", (gridRows - 1) * halfD);
+        }
+
+        gridGroup.innerHTML = "";
+        gridData.forEach((colorIdx, index) => {
+          const c = index % gridCols;
+          const r = Math.floor(index / gridCols);
+
+          if (r % 2 !== 0 && c === gridCols - 1) return;
+
+          let cx = c * d + halfD;
+          if (r % 2 !== 0) cx += halfD;
+          const cy = r * halfD + halfD;
+
+          const pathD = `M ${cx} ${cy - halfD} L ${cx + halfD} ${cy} L ${cx} ${cy + halfD} L ${cx - halfD} ${cy} Z`;
+
+          const path = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "path",
+          );
+          path.setAttribute("d", pathD);
+          path.setAttribute("fill", colors[colorIdx]);
+          path.setAttribute("stroke", "#000");
+          path.setAttribute("stroke-width", "1.5");
+          path.setAttribute("stroke-linejoin", "miter");
+          path.setAttribute("data-index", index);
+          path.setAttribute(
+            "class",
+            "transition-colors duration-150 ease-in-out hover:opacity-80 cursor-pointer",
+          );
+
+          gridGroup.appendChild(path);
+        });
+
+        renderText();
+        renderHighlights();
+      }
+
+      function renderText() {
+        textGroup.innerHTML = "";
+        if (!phrase) return;
+
+        gridData.forEach((_, index) => {
+          const c = index % gridCols;
+          const r = Math.floor(index / gridCols);
+
+          if (r % 2 !== 0 && c < whiteCols) {
+            const whiteRowIndex = Math.floor(r / 2);
+            const charIndex = whiteRowIndex + c;
+
+            if (charIndex < phrase.length) {
+              const char = phrase[charIndex];
+
+              let cx = c * d + halfD + halfD;
+              const cy = r * halfD + halfD;
+
+              const textNode = document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "text",
+              );
+              textNode.setAttribute("x", cx);
+              textNode.setAttribute("y", cy);
+              textNode.setAttribute("text-anchor", "middle");
+              textNode.setAttribute("dominant-baseline", "central");
+              textNode.style.fontFamily = currentFont;
+              textNode.setAttribute("font-size", "18px");
+              textNode.setAttribute("font-weight", "bold");
+              textNode.setAttribute("fill", "#1a0f0f");
+              textNode.textContent = char;
+
+              textGroup.appendChild(textNode);
+            }
+          }
+        });
+      }
+
+      function renderHighlights() {
+        highlightGroup.innerHTML = "";
+        const vb = getViewBoxInfo();
+        const b = vb.borders;
+        const inner = vb.inner;
+
+        selectedIndices.forEach((item) => {
+          if (typeof item === "number") {
+            const index = item;
+            const c = index % gridCols;
+            const r = Math.floor(index / gridCols);
+
+            if (r % 2 !== 0 && c === gridCols - 1) return;
+
+            let cx = c * d + halfD;
+            if (r % 2 !== 0) cx += halfD;
+            const cy = r * halfD + halfD;
+
+            const pathD = `M ${cx} ${cy - halfD} L ${cx + halfD} ${cy} L ${cx} ${cy + halfD} L ${cx - halfD} ${cy} Z`;
+
+            const path = document.createElementNS(
+              "http://www.w3.org/2000/svg",
+              "path",
+            );
+            path.setAttribute("d", pathD);
+            path.setAttribute("fill", "none");
+            path.setAttribute("stroke", "#ffffff");
+            path.setAttribute("stroke-width", "4");
+            path.setAttribute("stroke-linejoin", "miter");
+
+            highlightGroup.appendChild(path);
+          } else if (
+            typeof item === "string" &&
+            item.startsWith("border-") &&
+            clipEdges &&
+            vb.inner
+          ) {
+            const type = item.split("-")[1];
+            const rect = document.createElementNS(
+              "http://www.w3.org/2000/svg",
+              "rect",
+            );
+            rect.setAttribute("fill", "none");
+            rect.setAttribute("stroke", "#ffffff");
+            rect.setAttribute("stroke-width", "4");
+            rect.setAttribute(
+              "class",
+              "pointer-events-none drop-shadow-md print-hidden",
+            );
+
+            if (type === "outer") {
+              rect.setAttribute("x", inner.x - b.pad - b.thick - b.ring);
+              rect.setAttribute("y", inner.y - b.pad - b.thick - b.ring);
+              rect.setAttribute(
+                "width",
+                inner.w + (b.pad + b.thick + b.ring) * 2,
+              );
+              rect.setAttribute(
+                "height",
+                inner.h + (b.pad + b.thick + b.ring) * 2,
+              );
+            } else if (type === "inner") {
+              rect.setAttribute("x", inner.x - b.pad - b.thick);
+              rect.setAttribute("y", inner.y - b.pad - b.thick);
+              rect.setAttribute("width", inner.w + (b.pad + b.thick) * 2);
+              rect.setAttribute("height", inner.h + (b.pad + b.thick) * 2);
+            } else if (type === "padding") {
+              rect.setAttribute("x", inner.x - b.pad);
+              rect.setAttribute("y", inner.y - b.pad);
+              rect.setAttribute("width", inner.w + b.pad * 2);
+              rect.setAttribute("height", inner.h + b.pad * 2);
+            }
+            highlightGroup.appendChild(rect);
+          }
+        });
+      }
+
+      function updateGridColors() {
+        const paths = gridGroup.children;
+        for (let i = 0; i < paths.length; i++) {
+          const idxStr = paths[i].getAttribute("data-index");
+          if (idxStr !== null) {
+            const idx = parseInt(idxStr);
+            paths[i].setAttribute("fill", colors[gridData[idx]]);
+          }
+        }
+      }
+
+      function updateBorderColors() {
+        const outer = document.querySelector('[data-border="outer"]');
+        if (outer) outer.setAttribute("fill", borderColors.outer);
+        const inner = document.querySelector('[data-border="inner"]');
+        if (inner) inner.setAttribute("fill", borderColors.inner);
+        const padding = document.querySelector('[data-border="padding"]');
+        if (padding) padding.setAttribute("fill", borderColors.padding);
+      }
+
+      // --- Selection & UI Interaction ---
+      function updateClipToggleVisuals() {
+        clipToggle.style.transform = clipEdges
+          ? "translateX(100%)"
+          : "translateX(0)";
+        clipToggle.style.borderColor = clipEdges ? "#b45309" : "#d6d3d1";
+        if (clipEdges) {
+          toggleLabel.classList.add("!bg-amber-600");
+        } else {
+          toggleLabel.classList.remove("!bg-amber-600");
+        }
+      }
+
+      function updateSelectionUI() {
+        selectionCount.textContent = `${selectedIndices.size} ${translations[currentLang].selected}`;
+        clearSelectionBtn.style.display =
+          selectedIndices.size > 0 ? "block" : "none";
+        renderPalette();
+      }
+
+      function getTargetItemId(target) {
+        const idxStr = target.getAttribute("data-index");
+        if (idxStr !== null) return parseInt(idxStr);
+        const borderStr = target.getAttribute("data-border");
+        if (borderStr !== null) return "border-" + borderStr;
+        return null;
+      }
+
+      function handlePointerDown(e) {
+        if (e.button !== 0 && e.type !== "touchstart") return;
+        const itemId = getTargetItemId(e.target);
+        if (itemId !== null) {
+          e.preventDefault();
+          isDragging = true;
+          const isSelected = selectedIndices.has(itemId);
+          dragMode = isSelected ? "deselect" : "select";
+
+          if (dragMode === "select") selectedIndices.add(itemId);
+          else selectedIndices.delete(itemId);
+
+          updateSelectionUI();
+          renderHighlights();
+        }
+      }
+
+      function handlePointerOver(e) {
+        if (!isDragging || !dragMode) return;
+        const itemId = getTargetItemId(e.target);
+        if (itemId !== null) {
+          if (dragMode === "select") selectedIndices.add(itemId);
+          else selectedIndices.delete(itemId);
+
+          updateSelectionUI();
+          renderHighlights();
+        }
+      }
+
+      // --- Palette Logic ---
+      function renderPalette() {
+        colorPaletteContainer.innerHTML = "";
+        colors.forEach((color, idx) => {
+          const wrapper = document.createElement("div");
+          wrapper.className = "flex flex-col gap-1";
+
+          const applyBtn = document.createElement("button");
+          const hasSelection = selectedIndices.size > 0;
+          applyBtn.className = `w-full aspect-square rounded-md shadow-sm border transition-all ${
+            hasSelection
+              ? "border-amber-500 cursor-pointer hover:scale-105 hover:shadow-md"
+              : "border-stone-300 opacity-60 cursor-not-allowed"
+          }`;
+          applyBtn.style.backgroundColor = color;
+          applyBtn.disabled = !hasSelection;
+
+          applyBtn.onclick = () => {
+            if (!hasSelection) return;
+            selectedIndices.forEach((item) => {
+              if (typeof item === "number") {
+                gridData[item] = idx;
+              } else if (
+                typeof item === "string" &&
+                item.startsWith("border-")
+              ) {
+                const type = item.split("-")[1];
+                borderColors[type] = colors[idx];
+              }
+            });
+            selectedIndices.clear();
+            updateSelectionUI();
+            updateGridColors();
+            updateBorderColors();
+            renderHighlights();
+          };
+
+          const editWrapper = document.createElement("div");
+          editWrapper.className =
+            "relative h-6 rounded border border-stone-300 overflow-hidden cursor-pointer hover:bg-stone-200 bg-stone-100 text-center flex items-center justify-center transition-colors";
+
+          const label = document.createElement("span");
+          label.className =
+            "text-[10px] text-stone-600 font-bold uppercase tracking-wider";
+          label.textContent = translations[currentLang].edit;
+
+          const input = document.createElement("input");
+          input.type = "color";
+          input.value = color;
+          input.className =
+            "absolute inset-0 w-[200%] h-[200%] -top-1/4 -left-1/4 cursor-pointer opacity-0";
+          input.onchange = (e) => {
+            colors[idx] = e.target.value;
+            renderPalette();
+            updateGridColors();
+          };
+
+          editWrapper.appendChild(label);
+          editWrapper.appendChild(input);
+          wrapper.appendChild(applyBtn);
+          wrapper.appendChild(editWrapper);
+
+          colorPaletteContainer.appendChild(wrapper);
+        });
+      }
+
+      // --- Export Logic ---
+      function handleDownloadSVG() {
+        const serializer = new XMLSerializer();
+        let source = serializer.serializeToString(matrixSvg);
+        if (!source.includes('xmlns="http://www.w3.org/2000/svg"')) {
+          source = source.replace(
+            /^<svg/,
+            '<svg xmlns="http://www.w3.org/2000/svg"',
+          );
+        }
+        const blob = new Blob([source], {
+          type: "image/svg+xml;charset=utf-8",
+        });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "illuminated-matrix.svg";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+
+      async function handleDownloadPNG() {
+        const btn = document.getElementById("download-png-btn");
+        const btnText = document.getElementById("png-btn-text");
+
+        btn.disabled = true;
+        btnText.textContent = translations[currentLang].wait;
+
+        try {
+          const serializer = new XMLSerializer();
+          let source = serializer.serializeToString(matrixSvg);
+          if (!source.includes('xmlns="http://www.w3.org/2000/svg"')) {
+            source = source.replace(
+              /^<svg/,
+              '<svg xmlns="http://www.w3.org/2000/svg"',
+            );
+          }
+
+          const img = new Image();
+          const svg64 = btoa(unescape(encodeURIComponent(source)));
+          const image64 = "data:image/svg+xml;base64," + svg64;
+
+          await new Promise((resolve, reject) => {
+            img.onload = resolve;
+            img.onerror = reject;
+            img.src = image64;
+          });
+
+          const canvas = document.createElement("canvas");
+          const vb = getViewBoxInfo();
+          const scale = 3;
+          canvas.width = vb.width * scale;
+          canvas.height = vb.height * scale;
+
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+          const imgData = canvas.toDataURL("image/png", 1.0);
+
+          const link = document.createElement("a");
+          link.href = imgData;
+          link.download = "illuminated-matrix.png";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        } catch (error) {
+          console.error("Failed to generate PNG:", error);
+          alert(
+            "Failed to generate PNG. Please try downloading as SVG instead.",
+          );
+        } finally {
+          btn.disabled = false;
+          btnText.textContent = translations[currentLang].png;
+        }
+      }
+
+      // Boot the app
+      document.addEventListener("DOMContentLoaded", init);
+    </script>
+  </body>
+</html>
