@@ -207,6 +207,17 @@
               </div>
             </div>
           </div>
+          <div
+            class="mt-2 text-sm text-stone-600 bg-stone-200/50 p-2.5 rounded-md border border-stone-200/80 flex justify-between items-center shadow-sm"
+          >
+            <span data-i18n="numPaths" class="font-medium"
+              >Number of paths:</span
+            >
+            <span
+              id="paths-value"
+              class="font-bold text-stone-800 tabular-nums"
+            ></span>
+          </div>
         </div>
 
         <!-- Phrase Overlay -->
@@ -599,6 +610,7 @@
           dimensions: "Dimensions",
           colsLabel: "Columns (White Diamonds)",
           rowsLabel: "Rows (White Diamonds)",
+          numPaths: "Number of paths:",
           textOverlay: "Text Overlay",
           intentionLabel: "Intention",
           intentionPlaceholder: "e.g. Pray for me",
@@ -628,6 +640,7 @@
           dimensions: "Dimensiones",
           colsLabel: "Columnas (Diamantes Blancos)",
           rowsLabel: "Filas (Diamantes Blancos)",
+          numPaths: "Número de caminos:",
           textOverlay: "Superposición de Texto",
           intentionLabel: "Intención",
           intentionPlaceholder: "ej. Reza por mí",
@@ -658,6 +671,7 @@
           dimensions: "Dimensions",
           colsLabel: "Columnes (Diamants Blancs)",
           rowsLabel: "Files (Diamants Blancs)",
+          numPaths: "Nombre de camins:",
           textOverlay: "Superposició de Text",
           intentionLabel: "Intenció",
           intentionPlaceholder: "ex. Prega per mi",
@@ -709,6 +723,32 @@
 
       const d = 50;
       const halfD = d / 2;
+
+      // --- Math & Math Logic ---
+      function calculatePaths(c, r) {
+        const n = c + r - 2;
+        let k = c - 1;
+
+        if (k < 0 || k > n) return "0";
+        if (k === 0 || k === n) return "1";
+        if (k > Math.floor(n / 2)) k = n - k;
+
+        // Using BigInt because combinations can exceed 2^53 (e.g. 40x40 grid)
+        let res = 1n;
+        let bigN = BigInt(n);
+        for (let i = 1n; i <= BigInt(k); i++) {
+          res = (res * bigN) / i;
+          bigN--;
+        }
+        return res.toLocaleString();
+      }
+
+      function updatePathsDisplay() {
+        const pathsValue = document.getElementById("paths-value");
+        if (pathsValue) {
+          pathsValue.textContent = calculatePaths(whiteCols, whiteRows);
+        }
+      }
 
       // --- Run-Length Encoder for Grid State ---
       const rleMap = { 0: "A", 1: "B", 2: "C", 3: "D" };
@@ -1230,6 +1270,7 @@
 
         renderText();
         renderHighlights();
+        updatePathsDisplay();
       }
 
       function renderText() {
