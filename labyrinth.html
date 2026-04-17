@@ -400,28 +400,102 @@
             Clear Selection
           </button>
 
-          <button
-            id="regen-btn"
-            class="w-full mt-2 flex items-center justify-center gap-2 py-2 px-4 bg-stone-200 hover:bg-stone-300 text-stone-800 rounded-md font-medium transition-colors text-sm border border-stone-300"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+          <!-- Actions -->
+          <div class="grid grid-cols-2 gap-2 mt-2">
+            <button
+              id="regen-btn"
+              class="w-full flex items-center justify-center gap-2 py-2 px-2 bg-stone-200 hover:bg-stone-300 text-stone-800 rounded-md font-medium transition-colors text-sm border border-stone-300"
             >
-              <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-              <path d="M3 3v5h5" />
-              <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
-              <path d="M16 21v-5h5" />
-            </svg>
-            <span data-i18n="regenerate">Regenerate Pattern</span>
-          </button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                <path d="M3 3v5h5" />
+                <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+                <path d="M16 21v-5h5" />
+              </svg>
+              <span data-i18n="regenerate">Regenerate</span>
+            </button>
+            <button
+              id="share-btn"
+              class="w-full flex items-center justify-center gap-2 py-2 px-2 bg-stone-200 hover:bg-stone-300 text-stone-800 rounded-md font-medium transition-colors text-sm border border-stone-300"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
+                />
+                <path
+                  d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
+                />
+              </svg>
+              <span id="share-btn-text" data-i18n="shareLink">Copy Link</span>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 mt-2">
+            <button
+              id="save-local-btn"
+              class="w-full flex items-center justify-center gap-2 py-2 px-2 bg-stone-200 hover:bg-stone-300 text-stone-800 rounded-md font-medium transition-colors text-sm border border-stone-300"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+                />
+                <polyline points="17 21 17 13 7 13 7 21" />
+                <polyline points="7 3 7 8 15 8" />
+              </svg>
+              <span id="save-local-btn-text" data-i18n="saveState">Save</span>
+            </button>
+            <button
+              id="load-local-btn"
+              class="w-full flex items-center justify-center gap-2 py-2 px-2 bg-stone-200 hover:bg-stone-300 text-stone-800 rounded-md font-medium transition-colors text-sm border border-stone-300"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"
+                />
+              </svg>
+              <span id="load-local-btn-text" data-i18n="loadState">Load</span>
+            </button>
+          </div>
 
           <div class="grid grid-cols-2 gap-2 mt-2">
             <button
@@ -474,7 +548,7 @@
 
     <!-- Main Canvas Area -->
     <div
-      class="flex-1 flex items-center justify-center p-8 bg-[#e5dfd3] relative overflow-hidden print-p-0 print-bg-none print-block print-h-screen"
+      class="flex-1 flex items-start justify-center p-4 pt-8 md:p-8 md:pt-10 bg-[#e5dfd3] relative overflow-hidden print-p-0 print-bg-none print-block print-h-screen"
       style="
         background-image: url(&quot;https://www.transparenttextures.com/patterns/parchment.png&quot;);
       "
@@ -527,7 +601,14 @@
           instruction:
             "Drag across diamonds or borders to select them, then click a color below to paint.",
           clearSelection: "Clear Selection",
-          regenerate: "Regenerate Pattern",
+          regenerate: "Regenerate",
+          shareLink: "Copy Link",
+          saveState: "Save",
+          loadState: "Load",
+          copied: "Copied!",
+          saved: "Saved!",
+          loaded: "Loaded!",
+          loadFailed: "No saved data",
           selected: "Selected",
           edit: "Edit",
           wait: "Wait...",
@@ -550,7 +631,14 @@
           instruction:
             "Arrastra sobre los diamantes o bordes para seleccionarlos, luego haz clic en un color abajo para pintar.",
           clearSelection: "Borrar Selección",
-          regenerate: "Regenerar Patrón",
+          regenerate: "Regenerar",
+          shareLink: "Copiar Enlace",
+          saveState: "Guardar",
+          loadState: "Cargar",
+          copied: "¡Copiado!",
+          saved: "¡Guardado!",
+          loaded: "¡Cargado!",
+          loadFailed: "No hay datos",
           selected: "Seleccionado(s)",
           edit: "Editar",
           wait: "Espera...",
@@ -573,7 +661,14 @@
           instruction:
             "Arrossega sobre els diamants o vores per seleccionar-los, després fes clic a un color a sota per pintar.",
           clearSelection: "Esborrar Selecció",
-          regenerate: "Regenerar Patró",
+          regenerate: "Regenerar",
+          shareLink: "Copiar Enllaç",
+          saveState: "Desar",
+          loadState: "Carregar",
+          copied: "Copiat!",
+          saved: "Desat!",
+          loaded: "Carregat!",
+          loadFailed: "No hi ha dades",
           selected: "Seleccionat(s)",
           edit: "Editar",
           wait: "Espera...",
@@ -606,6 +701,41 @@
 
       const d = 50;
       const halfD = d / 2;
+
+      // --- Run-Length Encoder for Grid State (Compresses Array for URL & Storage) ---
+      const rleMap = { 0: "A", 1: "B", 2: "C", 3: "D" };
+      const revRleMap = { A: 0, B: 1, C: 2, D: 3 };
+
+      function encodeGrid(grid) {
+        let res = "";
+        let count = 1;
+        for (let i = 1; i <= grid.length; i++) {
+          if (grid[i] === grid[i - 1]) {
+            count++;
+          } else {
+            res += count.toString() + rleMap[grid[i - 1]];
+            count = 1;
+          }
+        }
+        return res; // E.g., "12A5D" means twelve 0s, five 3s.
+      }
+
+      function decodeGrid(str) {
+        let grid = [];
+        let countStr = "";
+        for (let i = 0; i < str.length; i++) {
+          const char = str[i];
+          if (revRleMap[char] !== undefined) {
+            const count = parseInt(countStr, 10);
+            const val = revRleMap[char];
+            for (let k = 0; k < count; k++) grid.push(val);
+            countStr = "";
+          } else {
+            countStr += char;
+          }
+        }
+        return grid;
+      }
 
       // --- DOM Elements ---
       const langSelect = document.getElementById("lang-select");
@@ -650,19 +780,29 @@
         const updateCols = (val) => {
           let newVal = Math.max(1, Math.min(40, val));
           if (isNaN(newVal)) newVal = whiteCols;
+          if (newVal === whiteCols) return;
+
+          const oldGridCols = gridCols;
+          const oldGridRows = gridRows;
+
           whiteCols = newVal;
           colsInput.value = whiteCols;
           gridCols = whiteCols + 1;
-          generateGrid();
+          resizeGrid(oldGridCols, oldGridRows, gridCols, gridRows);
         };
 
         const updateRows = (val) => {
           let newVal = Math.max(1, Math.min(40, val));
           if (isNaN(newVal)) newVal = whiteRows;
+          if (newVal === whiteRows) return;
+
+          const oldGridCols = gridCols;
+          const oldGridRows = gridRows;
+
           whiteRows = newVal;
           rowsInput.value = whiteRows;
           gridRows = whiteRows * 2 + 1;
-          generateGrid();
+          resizeGrid(oldGridCols, oldGridRows, gridCols, gridRows);
         };
 
         colsInput.addEventListener("change", (e) =>
@@ -695,6 +835,15 @@
           .getElementById("regen-btn")
           .addEventListener("click", generateGrid);
         document
+          .getElementById("share-btn")
+          .addEventListener("click", saveStateToURL);
+        document
+          .getElementById("save-local-btn")
+          .addEventListener("click", saveStateToLocal);
+        document
+          .getElementById("load-local-btn")
+          .addEventListener("click", loadStateFromLocal);
+        document
           .getElementById("download-svg-btn")
           .addEventListener("click", handleDownloadSVG);
         document
@@ -718,10 +867,18 @@
           dragMode = null;
         });
 
-        // Initial Render
+        // Initial Render logic: Attempt to parse URL first
+        const loadedFromURL = loadStateFromURL();
         updateLanguage();
-        generateGrid();
         updateClipToggleVisuals();
+
+        if (!loadedFromURL) {
+          generateGrid();
+        } else {
+          updateSelectionUI();
+          renderLayout();
+          renderPalette();
+        }
       }
 
       function updateLanguage() {
@@ -749,6 +906,198 @@
         renderPalette();
       }
 
+      // --- URL State Management ---
+      function saveStateToURL() {
+        const params = new URLSearchParams();
+        params.set("c", whiteCols);
+        params.set("r", whiteRows);
+        params.set("b", clipEdges ? 1 : 0);
+        params.set("l", currentLang);
+        params.set("pal", colors.map((c) => c.replace("#", "")).join("-"));
+        params.set(
+          "bc",
+          `${borderColors.outer.replace("#", "")}-${borderColors.inner.replace("#", "")}-${borderColors.padding.replace("#", "")}`,
+        );
+        params.set("f", currentFont);
+        params.set("ph", phrase);
+        params.set("g", encodeGrid(gridData));
+
+        const newHash = "#" + params.toString();
+        const fullUrl =
+          window.location.origin + window.location.pathname + newHash;
+
+        // Update URL bar silently
+        history.replaceState(null, null, newHash);
+
+        // Copy to clipboard fallback (safe for iframes)
+        const textArea = document.createElement("textarea");
+        textArea.value = fullUrl;
+        textArea.style.position = "fixed";
+        textArea.style.top = "0";
+        textArea.style.left = "0";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        try {
+          document.execCommand("copy");
+          // Temporary success UI Change
+          const shareBtnText = document.getElementById("share-btn-text");
+          const originalText = translations[currentLang].shareLink;
+          shareBtnText.textContent = translations[currentLang].copied;
+          setTimeout(() => {
+            shareBtnText.textContent = originalText;
+          }, 2000);
+        } catch (err) {
+          console.error("Failed to copy", err);
+        }
+
+        document.body.removeChild(textArea);
+      }
+
+      function loadStateFromURL() {
+        const hash = window.location.hash.substring(1);
+        if (!hash) return false;
+
+        try {
+          const params = new URLSearchParams(hash);
+          if (params.has("c")) whiteCols = parseInt(params.get("c"), 10);
+          if (params.has("r")) whiteRows = parseInt(params.get("r"), 10);
+          if (params.has("b")) clipEdges = params.get("b") === "1";
+          if (params.has("l")) currentLang = params.get("l");
+          if (params.has("pal"))
+            colors = params
+              .get("pal")
+              .split("-")
+              .map((c) => "#" + c);
+          if (params.has("bc")) {
+            const bcArr = params.get("bc").split("-");
+            borderColors = {
+              outer: "#" + bcArr[0],
+              inner: "#" + bcArr[1],
+              padding: "#" + bcArr[2],
+            };
+          }
+          if (params.has("f")) currentFont = params.get("f");
+          if (params.has("ph")) phrase = params.get("ph");
+
+          gridCols = whiteCols + 1;
+          gridRows = whiteRows * 2 + 1;
+
+          if (params.has("g")) {
+            const decoded = decodeGrid(params.get("g"));
+            if (decoded.length === gridCols * gridRows) {
+              gridData = decoded;
+            } else {
+              return false; // Fallback to regen if dimensions don't match grid array
+            }
+          } else {
+            return false;
+          }
+
+          // Sync UI Input values
+          colsInput.value = whiteCols;
+          rowsInput.value = whiteRows;
+          clipToggle.checked = clipEdges;
+          phraseInput.value = phrase;
+          fontSelect.value = currentFont;
+          langSelect.value = currentLang;
+
+          return true;
+        } catch (e) {
+          console.error("Error loading state from URL", e);
+          return false;
+        }
+      }
+
+      // --- Local Browser Storage ---
+      function saveStateToLocal() {
+        const state = {
+          c: whiteCols,
+          r: whiteRows,
+          b: clipEdges,
+          l: currentLang,
+          pal: colors,
+          bc: borderColors,
+          f: currentFont,
+          ph: phrase,
+          g: encodeGrid(gridData),
+        };
+
+        try {
+          localStorage.setItem("labyrinthState", JSON.stringify(state));
+          const btnText = document.getElementById("save-local-btn-text");
+          const originalText = translations[currentLang].saveState;
+          btnText.textContent = translations[currentLang].saved;
+          setTimeout(() => {
+            btnText.textContent = originalText;
+          }, 2000);
+        } catch (e) {
+          console.error("Local storage error", e);
+        }
+      }
+
+      function loadStateFromLocal() {
+        try {
+          const saved = localStorage.getItem("labyrinthState");
+          if (!saved) {
+            const btnText = document.getElementById("load-local-btn-text");
+            const originalText = translations[currentLang].loadState;
+            btnText.textContent = translations[currentLang].loadFailed;
+            setTimeout(() => {
+              btnText.textContent = originalText;
+            }, 2000);
+            return;
+          }
+
+          const state = JSON.parse(saved);
+
+          if (state.c !== undefined) whiteCols = state.c;
+          if (state.r !== undefined) whiteRows = state.r;
+          if (state.b !== undefined) clipEdges = state.b;
+          if (state.l !== undefined) currentLang = state.l;
+          if (state.pal !== undefined) colors = state.pal;
+          if (state.bc !== undefined) borderColors = state.bc;
+          if (state.f !== undefined) currentFont = state.f;
+          if (state.ph !== undefined) phrase = state.ph;
+
+          gridCols = whiteCols + 1;
+          gridRows = whiteRows * 2 + 1;
+
+          if (state.g) {
+            const decoded = decodeGrid(state.g);
+            if (decoded.length === gridCols * gridRows) {
+              gridData = decoded;
+            } else {
+              generateGrid(); // Fallback if data is corrupted
+            }
+          }
+
+          // Sync UI Input values
+          colsInput.value = whiteCols;
+          rowsInput.value = whiteRows;
+          clipToggle.checked = clipEdges;
+          phraseInput.value = phrase;
+          fontSelect.value = currentFont;
+          langSelect.value = currentLang;
+
+          updateLanguage();
+          updateClipToggleVisuals();
+          updateSelectionUI();
+          renderLayout();
+          renderPalette();
+
+          const btnText = document.getElementById("load-local-btn-text");
+          const originalText = translations[currentLang].loadState;
+          btnText.textContent = translations[currentLang].loaded;
+          setTimeout(() => {
+            btnText.textContent = originalText;
+          }, 2000);
+        } catch (e) {
+          console.error("Failed to load local state", e);
+        }
+      }
+
       // --- Core Logic ---
       function generateGrid() {
         gridData = [];
@@ -761,6 +1110,28 @@
           }
         }
         selectedIndices.clear();
+        updateSelectionUI();
+        renderLayout();
+      }
+
+      function resizeGrid(oldCols, oldRows, newCols, newRows) {
+        let newGridData = [];
+        for (let r = 0; r < newRows; r++) {
+          for (let c = 0; c < newCols; c++) {
+            if (r < oldRows && c < oldCols) {
+              const oldIndex = r * oldCols + c;
+              newGridData.push(gridData[oldIndex]);
+            } else {
+              if (r % 2 !== 0) {
+                newGridData.push(3);
+              } else {
+                newGridData.push(Math.floor(Math.random() * 3));
+              }
+            }
+          }
+        }
+        gridData = newGridData;
+        selectedIndices.clear(); // Clear selections as indices shift when columns change
         updateSelectionUI();
         renderLayout();
       }
@@ -819,8 +1190,8 @@
         } else {
           canvasContainer.classList.remove("shadow-2xl");
           matrixSvg.classList.add("drop-shadow-xl");
-          matrixSvg.style.maxHeight = "85vh";
-          matrixSvg.style.maxWidth = "85vw";
+          matrixSvg.style.maxHeight = "100%";
+          matrixSvg.style.maxWidth = "100%";
           gridGroup.removeAttribute("clip-path");
           textGroup.removeAttribute("clip-path");
         }
