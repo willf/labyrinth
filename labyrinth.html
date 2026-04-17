@@ -65,50 +65,12 @@
     </style>
   </head>
   <body
-    class="min-h-screen bg-stone-200 text-stone-900 font-sans flex flex-col md:flex-row print-block print-bg-white print-min-h-0 print-h-screen"
+    class="min-h-screen bg-stone-200 text-stone-900 font-sans flex flex-col-reverse md:flex-row-reverse print-block print-bg-white print-min-h-0 print-h-screen"
   >
-    <!-- Sidebar Controls -->
+    <!-- Sidebar Controls (Right side on Desktop, Bottom on Mobile) -->
     <div
-      class="w-full md:w-80 bg-stone-100 border-r border-stone-300 shadow-xl z-10 flex flex-col max-h-screen overflow-y-auto print-hidden"
+      class="w-full md:w-80 bg-stone-100 border-t md:border-t-0 md:border-l border-stone-300 shadow-xl z-10 flex flex-col md:h-screen md:overflow-y-auto print-hidden"
     >
-      <div class="p-6 border-b border-stone-300 bg-stone-50">
-        <div class="flex justify-end mb-4">
-          <select
-            id="lang-select"
-            class="px-2 py-1 bg-stone-200 border border-stone-300 rounded text-xs text-stone-700 focus:outline-none focus:ring-1 focus:ring-amber-600 font-medium"
-          >
-            <option value="en">English</option>
-            <option value="es">Español</option>
-            <option value="ca">Català</option>
-          </select>
-        </div>
-        <h1
-          class="text-2xl font-bold tracking-tight text-stone-800 flex items-center gap-2"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="text-stone-600"
-          >
-            <path d="M20 7h-9" />
-            <path d="M14 17H5" />
-            <circle cx="17" cy="17" r="3" />
-            <circle cx="5" cy="7" r="3" />
-          </svg>
-          <span data-i18n="appTitle">Labyrinth Generator</span>
-        </h1>
-        <p class="text-sm text-stone-500 mt-2" data-i18n="appSubtitle">
-          In the style of Florentius of Valeránica
-        </p>
-      </div>
-
       <div class="p-6 flex-1 flex flex-col gap-8">
         <!-- Dimensions -->
         <div class="space-y-4">
@@ -546,22 +508,71 @@
       </div>
     </div>
 
-    <!-- Main Canvas Area -->
+    <!-- Main Canvas Area (Left side on Desktop, Top on Mobile) -->
     <div
-      class="flex-1 flex items-start justify-center p-4 pt-8 md:p-8 md:pt-10 bg-[#e5dfd3] relative overflow-hidden print-p-0 print-bg-none print-block print-h-screen"
+      class="flex-1 flex flex-col min-h-[60vh] md:min-h-0 bg-[#e5dfd3] relative print-p-0 print-bg-none print-block print-h-screen z-0"
       style="
         background-image: url(&quot;https://www.transparenttextures.com/patterns/parchment.png&quot;);
       "
     >
-      <!-- Dynamic Canvas Container -->
+      <!-- Header -->
       <div
-        id="canvas-container"
-        class="relative flex items-center justify-center transition-all duration-500 max-w-full max-h-full print-max-h-full print-border-none print-shadow-none print-m-auto print-h-full shadow-2xl"
+        class="w-full p-6 pb-2 md:px-8 md:pt-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 print-hidden shrink-0"
       >
+        <div>
+          <h1
+            class="text-2xl md:text-3xl font-bold tracking-tight text-stone-800 flex items-center gap-2 drop-shadow-sm"
+            style="text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.6)"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="text-stone-700"
+            >
+              <path d="M20 7h-9" />
+              <path d="M14 17H5" />
+              <circle cx="17" cy="17" r="3" />
+              <circle cx="5" cy="7" r="3" />
+            </svg>
+            <span data-i18n="appTitle">Labyrinth Generator</span>
+          </h1>
+          <p
+            class="text-sm md:text-base text-stone-700 mt-1 font-medium drop-shadow-sm"
+            data-i18n="appSubtitle"
+            style="text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.6)"
+          >
+            In the style of Florentius of Valeránica
+          </p>
+        </div>
+        <div>
+          <select
+            id="lang-select"
+            class="px-3 py-1.5 bg-stone-100/80 backdrop-blur-sm border border-stone-300 rounded-md text-sm text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-600 font-semibold shadow-sm hover:bg-white transition-colors cursor-pointer"
+          >
+            <option value="en">English</option>
+            <option value="es">Español</option>
+            <option value="ca">Català</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- SVG Container Wrapper (Flex-1 ensures it fills the remaining height) -->
+      <div
+        class="flex-1 w-full p-4 md:p-8 min-h-0 relative flex justify-center items-start overflow-hidden"
+      >
+        <!-- The SVG scales natively using preserveAspectRatio to stay flush to top and maintain shape -->
         <svg
           id="matrix-svg"
+          preserveAspectRatio="xMidYMin meet"
           xmlns="http://www.w3.org/2000/svg"
-          class="w-full h-full transition-all duration-300 touch-none print-max-h-full print-max-w-full print-shadow-none"
+          class="w-full h-full drop-shadow-2xl transition-all duration-300 touch-none print-max-h-full print-max-w-full print-shadow-none"
         >
           <g id="borders-group"></g>
 
@@ -573,10 +584,7 @@
 
           <g id="grid-group"></g>
           <g id="text-group" class="pointer-events-none select-none"></g>
-          <g
-            id="highlight-group"
-            class="pointer-events-none drop-shadow-md print-hidden"
-          ></g>
+          <g id="highlight-group" class="pointer-events-none print-hidden"></g>
         </svg>
       </div>
     </div>
@@ -702,7 +710,7 @@
       const d = 50;
       const halfD = d / 2;
 
-      // --- Run-Length Encoder for Grid State (Compresses Array for URL & Storage) ---
+      // --- Run-Length Encoder for Grid State ---
       const rleMap = { 0: "A", 1: "B", 2: "C", 3: "D" };
       const revRleMap = { A: 0, B: 1, C: 2, D: 3 };
 
@@ -717,7 +725,7 @@
             count = 1;
           }
         }
-        return res; // E.g., "12A5D" means twelve 0s, five 3s.
+        return res;
       }
 
       function decodeGrid(str) {
@@ -758,7 +766,6 @@
         "color-palette-container",
       );
 
-      const canvasContainer = document.getElementById("canvas-container");
       const matrixSvg = document.getElementById("matrix-svg");
       const bordersGroup = document.getElementById("borders-group");
       const manuscriptClipRect = document.getElementById(
@@ -882,31 +889,24 @@
       }
 
       function updateLanguage() {
-        // Document Title
         document.title = translations[currentLang].appTitle;
-
-        // Simple text elements
         document.querySelectorAll("[data-i18n]").forEach((el) => {
           const key = el.getAttribute("data-i18n");
           if (translations[currentLang][key]) {
             el.textContent = translations[currentLang][key];
           }
         });
-
-        // Input placeholders
         document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
           const key = el.getAttribute("data-i18n-placeholder");
           if (translations[currentLang][key]) {
             el.placeholder = translations[currentLang][key];
           }
         });
-
-        // Dynamic text updates
         updateSelectionUI();
         renderPalette();
       }
 
-      // --- URL State Management ---
+      // --- URL & Local Storage State Management ---
       function saveStateToURL() {
         const params = new URLSearchParams();
         params.set("c", whiteCols);
@@ -926,10 +926,8 @@
         const fullUrl =
           window.location.origin + window.location.pathname + newHash;
 
-        // Update URL bar silently
         history.replaceState(null, null, newHash);
 
-        // Copy to clipboard fallback (safe for iframes)
         const textArea = document.createElement("textarea");
         textArea.value = fullUrl;
         textArea.style.position = "fixed";
@@ -941,7 +939,6 @@
 
         try {
           document.execCommand("copy");
-          // Temporary success UI Change
           const shareBtnText = document.getElementById("share-btn-text");
           const originalText = translations[currentLang].shareLink;
           shareBtnText.textContent = translations[currentLang].copied;
@@ -951,7 +948,6 @@
         } catch (err) {
           console.error("Failed to copy", err);
         }
-
         document.body.removeChild(textArea);
       }
 
@@ -989,13 +985,12 @@
             if (decoded.length === gridCols * gridRows) {
               gridData = decoded;
             } else {
-              return false; // Fallback to regen if dimensions don't match grid array
+              return false;
             }
           } else {
             return false;
           }
 
-          // Sync UI Input values
           colsInput.value = whiteCols;
           rowsInput.value = whiteRows;
           clipToggle.checked = clipEdges;
@@ -1010,7 +1005,6 @@
         }
       }
 
-      // --- Local Browser Storage ---
       function saveStateToLocal() {
         const state = {
           c: whiteCols,
@@ -1023,7 +1017,6 @@
           ph: phrase,
           g: encodeGrid(gridData),
         };
-
         try {
           localStorage.setItem("labyrinthState", JSON.stringify(state));
           const btnText = document.getElementById("save-local-btn-text");
@@ -1051,7 +1044,6 @@
           }
 
           const state = JSON.parse(saved);
-
           if (state.c !== undefined) whiteCols = state.c;
           if (state.r !== undefined) whiteRows = state.r;
           if (state.b !== undefined) clipEdges = state.b;
@@ -1069,11 +1061,10 @@
             if (decoded.length === gridCols * gridRows) {
               gridData = decoded;
             } else {
-              generateGrid(); // Fallback if data is corrupted
+              generateGrid();
             }
           }
 
-          // Sync UI Input values
           colsInput.value = whiteCols;
           rowsInput.value = whiteRows;
           clipToggle.checked = clipEdges;
@@ -1131,7 +1122,7 @@
           }
         }
         gridData = newGridData;
-        selectedIndices.clear(); // Clear selections as indices shift when columns change
+        selectedIndices.clear();
         updateSelectionUI();
         renderLayout();
       }
@@ -1147,7 +1138,7 @@
           const pad = 12;
           const thick = 16;
           const ring = 6;
-          const totalPadding = pad + thick + ring;
+          const totalPadding = pad + thick + ring + 10; // Extra buffer for shadow
 
           return {
             x: innerX - totalPadding,
@@ -1159,10 +1150,10 @@
           };
         } else {
           return {
-            x: 0,
-            y: 0,
-            width: gridCols * d,
-            height: (gridRows - 1) * halfD + d,
+            x: -20, // Extra buffer for shadow
+            y: -20,
+            width: gridCols * d + 40,
+            height: (gridRows - 1) * halfD + d + 40,
             inner: null,
           };
         }
@@ -1172,26 +1163,16 @@
       function renderLayout() {
         const vb = getViewBoxInfo();
 
+        // ViewBox manages the scale natively! No explicit CSS width/height logic required.
         matrixSvg.setAttribute(
           "viewBox",
           `${vb.x} ${vb.y} ${vb.width} ${vb.height}`,
         );
 
-        canvasContainer.style.aspectRatio = clipEdges
-          ? `${vb.width} / ${vb.height}`
-          : "auto";
         if (clipEdges) {
-          canvasContainer.classList.add("shadow-2xl");
-          matrixSvg.classList.remove("drop-shadow-xl");
-          matrixSvg.style.maxHeight = "100%";
-          matrixSvg.style.maxWidth = "100%";
           gridGroup.setAttribute("clip-path", "url(#manuscript-clip)");
           textGroup.setAttribute("clip-path", "url(#manuscript-clip)");
         } else {
-          canvasContainer.classList.remove("shadow-2xl");
-          matrixSvg.classList.add("drop-shadow-xl");
-          matrixSvg.style.maxHeight = "100%";
-          matrixSvg.style.maxWidth = "100%";
           gridGroup.removeAttribute("clip-path");
           textGroup.removeAttribute("clip-path");
         }
