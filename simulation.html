@@ -437,6 +437,9 @@
               };
             }
           }
+          // Update token radius to scale with cell size
+          const tokenRadius = Math.min(cellSize * 0.28, 50);
+          tracerToken.setAttribute("r", tokenRadius);
           return positions;
         }
 
