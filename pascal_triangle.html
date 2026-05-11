@@ -701,7 +701,8 @@
             // Add a spacer to align with the 'a=' labels.
             const spacer = document.createElement("div");
             spacer.className = "row-number sticky-first-col";
-            spacer.style.opacity = "0"; // Make it invisible but take up space
+            spacer.textContent = "Columns/\nLength";
+            spacer.style.fontSize = "0.8rem";
             spacer.style.width = "68px";
             spacer.style.marginRight = "0";
             headerRow.appendChild(spacer);
