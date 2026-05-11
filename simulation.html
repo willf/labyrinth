@@ -537,15 +537,19 @@
           if (!graphArea || !numRows || !numCols) return;
           // Minimum pixel size per cell to keep letters legible
           const minCellSize = 56; // px
-          const maxCellSize = 80; // px (prevent cells from getting too large)
-          const verticalPadding = 32; // account for internal padding / borders
+          const maxCellSize = 80; // px (cap individual cell size)
+          const padding = 32; // account for internal padding / borders
           const targetMinHeight = Math.max(
-            numRows * minCellSize + verticalPadding,
+            numRows * minCellSize + padding,
             340,
           );
-          const targetMaxHeight = numRows * maxCellSize + verticalPadding;
+          const targetMaxHeight = numRows * maxCellSize + padding;
+          const targetMaxWidth = numCols * maxCellSize + padding;
           graphArea.style.minHeight = targetMinHeight + "px";
           graphArea.style.maxHeight = targetMaxHeight + "px";
+          graphArea.style.maxWidth = targetMaxWidth + "px";
+          graphArea.style.marginLeft = "auto";
+          graphArea.style.marginRight = "auto";
         }
 
         // ------------------------------------------------------------
