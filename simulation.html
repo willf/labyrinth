@@ -22,6 +22,9 @@
           opacity 0.3s,
           transform 0.3s;
       }
+      .graph-bg {
+        background-color: #f5f3f0;
+      }
       /* Graph area minimum sizing to prevent letter collapse */
       #graph-area {
         min-height: 340px; /* baseline safeguard */
@@ -47,7 +50,7 @@
     </style>
   </head>
   <body
-    class="bg-slate-100 flex flex-col items-center justify-start min-h-screen p-4"
+    class="bg-stone-200 flex flex-col items-center justify-start min-h-screen p-4"
   >
     <div class="w-full max-w-7xl mx-auto">
       <div class="text-center mb-4">
@@ -58,7 +61,7 @@
       <!-- User Inputs (Collapsible on mobile) -->
       <div
         id="controls-panel"
-        class="bg-white rounded-xl shadow-md mb-4 border border-slate-200"
+        class="bg-stone-100 rounded-xl shadow-md mb-4 border border-stone-300"
       >
         <div
           class="sm:hidden flex items-center justify-between px-4 py-2 border-b border-slate-100"
@@ -67,7 +70,7 @@
             id="toggle-controls-btn"
             type="button"
             aria-expanded="false"
-            class="text-xs font-semibold tracking-wide text-slate-700 flex items-center gap-2"
+            class="text-xs font-semibold tracking-wide text-stone-700 flex items-center gap-2"
           >
             <span id="controls-toggle-label">Show</span>
             <svg
@@ -86,7 +89,7 @@
           </button>
           <div
             id="controls-summary"
-            class="flex-1 ml-3 text-[10px] font-medium text-slate-500 truncate"
+            class="flex-1 ml-3 text-[10px] font-medium text-stone-500 truncate"
           ></div>
         </div>
         <div id="controls-body" class="p-4 pt-3 sm:pt-4">
@@ -150,7 +153,7 @@
                 class="mt-2 block w-full sm:w-56 cursor-pointer accent-indigo-600 h-2"
               />
               <div
-                class="hidden sm:flex items-center gap-1 mt-1 text-[11px] text-slate-600"
+                class="hidden sm:flex items-center gap-1 mt-1 text-[11px] text-stone-600"
               >
                 <span class="font-medium">Width:</span>
                 <span id="width-live-value" class="tabular-nums font-semibold"
@@ -158,15 +161,15 @@
                 >
               </div>
               <div
-                class="mt-1 text-[10px] sm:text-[11px] text-indigo-600 font-medium"
+                class="mt-1 text-[10px] sm:text-[11px] text-amber-600 font-medium"
                 id="total-paths-display"
                 aria-live="polite"
               ></div>
               <div
-                class="flex sm:hidden items-center justify-between mt-1 text-[10px] tracking-wide text-slate-500"
+                class="flex sm:hidden items-center justify-between mt-1 text-[10px] tracking-wide text-stone-500"
               >
                 <span id="mValueMinLabel_mobile">1</span>
-                <span class="text-slate-600 font-medium"
+                <span class="text-stone-700 font-medium"
                   >Width:
                   <span id="mValueDisplay" class="tabular-nums">4</span></span
                 >
@@ -176,7 +179,7 @@
             <div class="w-full sm:w-auto flex sm:block">
               <button
                 id="generate-btn"
-                class="action-button bg-indigo-600 text-white font-semibold py-2 px-5 rounded-lg shadow-md w-full sm:w-auto text-sm sm:text-base"
+                class="action-button bg-amber-600 text-white font-semibold py-2 px-5 rounded-lg shadow-md w-full sm:w-auto text-sm sm:text-base"
               >
                 Generate
               </button>
@@ -190,7 +193,7 @@
           <!-- Graph Area -->
           <div
             id="graph-area"
-            class="graph-bg border border-slate-300 rounded-xl shadow-lg relative overflow-hidden p-4"
+            class="graph-bg border border-stone-300 rounded-xl shadow-lg relative overflow-hidden p-4"
           >
             <svg id="graph-svg" class="w-full h-full">
               <!-- Matrix will be populated by JS -->
@@ -210,7 +213,7 @@
           </div>
 
           <div
-            class="bg-white border border-slate-200 rounded-xl shadow-lg p-4"
+            class="bg-stone-100 border border-stone-300 rounded-xl shadow-lg p-4"
           >
             <div class="relative">
               <div
@@ -219,27 +222,27 @@
               >
                 <button
                   id="start-btn"
-                  class="action-button bg-blue-600 text-white font-bold py-2 px-5 sm:px-6 rounded-lg shadow-md text-sm sm:text-base"
+                  class="action-button bg-amber-600 text-white font-bold py-2 px-5 sm:px-6 rounded-lg shadow-md text-sm sm:text-base"
                 >
                   Start
                 </button>
                 <button
                   id="advance-btn"
-                  class="action-button bg-green-600 text-white font-bold py-2 px-5 sm:px-6 rounded-lg shadow-md text-sm sm:text-base"
+                  class="action-button bg-stone-600 text-white font-bold py-2 px-5 sm:px-6 rounded-lg shadow-md text-sm sm:text-base"
                   disabled
                 >
                   Advance
                 </button>
                 <button
                   id="backtrack-btn"
-                  class="action-button bg-amber-600 text-white font-bold py-2 px-5 sm:px-6 rounded-lg shadow-md text-sm sm:text-base"
+                  class="action-button bg-stone-500 text-white font-bold py-2 px-5 sm:px-6 rounded-lg shadow-md text-sm sm:text-base"
                   disabled
                 >
                   Backtrack
                 </button>
                 <button
                   id="auto-btn"
-                  class="action-button bg-purple-600 text-white font-bold py-2 px-5 sm:px-6 rounded-lg shadow-md text-sm sm:text-base"
+                  class="action-button bg-amber-700 text-white font-bold py-2 px-5 sm:px-6 rounded-lg shadow-md text-sm sm:text-base"
                   disabled
                   data-mode="stopped"
                 >
@@ -251,15 +254,15 @@
         </div>
       </div>
 
-      <div class="bg-white border border-slate-200 rounded-xl shadow-lg p-4">
+      <div class="bg-stone-100 border border-stone-300 rounded-xl shadow-lg p-4">
         <div
           id="message-box"
-          class="bg-sky-100 border border-sky-300 text-sky-800 p-3 rounded-lg text-center mb-4 min-h-[50px] flex items-center justify-center"
+          class="bg-amber-50 border border-amber-200 text-amber-900 p-3 rounded-lg text-center mb-4 min-h-[50px] flex items-center justify-center"
         >
           <p id="message-text">Press 'Start' to begin the simulation.</p>
         </div>
         <div class="flex items-center gap-3 mt-6 justify-center flex-wrap">
-          <label for="speed-range" class="text-sm font-medium text-slate-700"
+          <label for="speed-range" class="text-sm font-medium text-stone-700"
             >Speed</label
           >
           <input
@@ -269,14 +272,14 @@
             max="2000"
             step="50"
             value="500"
-            class="w-48 accent-indigo-600 cursor-pointer"
+            class="w-48 accent-amber-600 cursor-pointer"
           />
           <span
             id="speed-display"
-            class="text-xs text-slate-600 tabular-nums w-16 text-right"
+            class="text-xs text-stone-600 tabular-nums w-16 text-right"
             >650 ms</span
           >
-          <span class="text-[10px] uppercase tracking-wide text-slate-400"
+          <span class="text-[10px] uppercase tracking-wide text-stone-400"
             >(Fast → Slow)</span
           >
         </div>
@@ -288,12 +291,12 @@
           <button
             id="speed-down-btn"
             type="button"
-            class="action-button bg-slate-500 text-white font-semibold px-2 py-1 rounded shadow text-xs"
+            class="action-button bg-stone-400 text-white font-semibold px-2 py-1 rounded shadow text-xs"
             aria-label="Decrease speed"
           >
             +
           </button>
-          <div class="text-[11px] text-slate-600 tracking-wide">
+          <div class="text-[11px] text-stone-600 tracking-wide">
             <span class="font-medium">Speed:</span>
             <span id="speed-inline-display" class="tabular-nums">650</span>
             ms
@@ -301,7 +304,7 @@
           <button
             id="speed-up-btn"
             type="button"
-            class="action-button bg-slate-500 text-white font-semibold px-2 py-1 rounded shadow text-xs"
+            class="action-button bg-stone-400 text-white font-semibold px-2 py-1 rounded shadow text-xs"
             aria-label="Increase speed"
           >
             -
@@ -504,7 +507,7 @@
               let fillClass = "fill-white";
               if (nodeId === START_NODE) fillClass = "fill-green-200";
               if (nodeId === END_NODE) fillClass = "fill-red-200";
-              rect.setAttribute("class", `stroke-slate-300 ${fillClass}`);
+              rect.setAttribute("class", `stroke-stone-400 ${fillClass}`);
 
               const text = document.createElementNS(
                 "http://www.w3.org/2000/svg",
@@ -514,7 +517,7 @@
               text.setAttribute("y", pos.cy);
               text.setAttribute("dy", ".3em");
               text.setAttribute("text-anchor", "middle");
-              text.setAttribute("class", "grid-cell-text fill-slate-700");
+              text.setAttribute("class", "grid-cell-text fill-stone-800");
               text.textContent = letterMatrix[i][j];
 
               g.appendChild(rect);
@@ -616,14 +619,14 @@
           if (isRunning) {
             autoBtn.disabled = false;
             autoBtn.textContent = "Stop";
-            autoBtn.classList.remove("bg-purple-600");
-            autoBtn.classList.add("bg-rose-600");
+            autoBtn.classList.remove("bg-amber-700");
+            autoBtn.classList.add("bg-red-600");
             autoBtn.dataset.mode = "running";
           } else {
             autoBtn.disabled = state.isFinished;
             autoBtn.textContent = "Auto";
-            autoBtn.classList.remove("bg-rose-600");
-            autoBtn.classList.add("bg-purple-600");
+            autoBtn.classList.remove("bg-red-600");
+            autoBtn.classList.add("bg-amber-700");
             autoBtn.dataset.mode = "stopped";
           }
         }
@@ -643,12 +646,12 @@
 
           if (state.isFinished) {
             startBtn.textContent = "Restart";
-            startBtn.classList.remove("bg-blue-600");
-            startBtn.classList.add("bg-indigo-600");
+            startBtn.classList.remove("bg-amber-600");
+            startBtn.classList.add("bg-amber-700");
           } else {
             startBtn.textContent = "Start";
-            startBtn.classList.remove("bg-indigo-600");
-            startBtn.classList.add("bg-blue-600");
+            startBtn.classList.remove("bg-amber-700");
+            startBtn.classList.add("bg-amber-600");
           }
           // Update controls summary for mobile
           if (controlsSummary && window.innerWidth < 640) {
