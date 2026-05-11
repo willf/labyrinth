@@ -1,66 +1,26 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Labyrinth</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Kalam:wght@400;700&display=swap"
-      rel="stylesheet"
-    />
     <style>
       body {
         font-family: "Georgia Pro", "Georgia", sans-serif;
         overscroll-behavior: none;
       }
-      .notepad {
-        font-family: "Ketem", cursive;
-        background-color: #fefabc;
-        background-image: linear-gradient(
-          to bottom,
-          transparent 0%,
-          transparent 98%,
-          #9db5d8 98%
-        );
-        background-size: 100% 2.5em;
-        line-height: 2.5em;
-        border: 1px solid #ddd;
-      }
-      .notepad-title {
-        border-bottom: 2px solid #ef4444;
-      }
-      .graph-bg {
-        background-color: #f8fafc;
-      }
-      .grid-cell-text {
-        pointer-events: none;
-        user-select: none;
-        font-weight: 500;
-        font-size: 1.5rem;
-      }
-      #tracer-token {
-        transition: all 0.5s ease-in-out;
-        filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
-      }
-      .memory-marker {
-        transition: all 0.3s ease-in-out;
-        opacity: 0.75;
-      }
       .action-button {
         transition: all 0.2s ease;
-      }
-      .action-button:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        transform: scale(1);
       }
       .action-button:hover:not(:disabled) {
         transform: translateY(-2px);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       }
       #message-box {
-        transition: opacity 0.3s, transform 0.3s;
+        transition:
+          opacity 0.3s,
+          transform 0.3s;
       }
       /* Graph area minimum sizing to prevent letter collapse */
       #graph-area {
@@ -73,23 +33,6 @@
       }
       /* Mobile (below Tailwind sm: 640px) adjustments */
       @media (max-width: 639px) {
-        .notepad {
-          font-size: 1rem;
-          line-height: 1.6;
-          background-size: 100% 1.8em;
-          padding: 1rem !important;
-          max-height: 220px;
-          overflow-y: auto;
-        }
-        .notepad-title {
-          font-size: 1.5rem;
-        }
-        .mobile-collapsed .notepad {
-          display: none;
-        }
-        .mobile-toggle-btn::after {
-          content: attr(data-state);
-        }
         /* Collapsible controls panel */
         #controls-panel.controls-collapsed #controls-body {
           display: none;
@@ -242,62 +185,33 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:h-[75vh]">
-        <!-- Graph Area -->
-        <div
-          id="graph-area"
-          class="graph-bg border border-slate-300 rounded-xl shadow-lg relative overflow-hidden p-4"
-        >
-          <svg id="graph-svg" class="w-full h-full">
-            <!-- Matrix will be populated by JS -->
-            <!-- Memory markers container -->
-            <g id="memory-markers-container"></g>
-            <!-- Tracer token -->
-            <circle
-              id="tracer-token"
-              r="18"
-              fill="#facc15"
-              stroke="#ca8a04"
-              stroke-width="3"
-              cx="-100"
-              cy="-100"
-            ></circle>
-          </svg>
-        </div>
-
-        <!-- Notepad and Controls -->
-        <div class="flex flex-col-reverse sm:flex-col gap-4" id="right-column">
+      <div class="flex flex-col gap-6">
+        <div class="flex flex-col gap-4">
+          <!-- Graph Area -->
           <div
-            class="notepad bg-yellow-50 border-yellow-200 rounded-lg shadow-lg p-6 flex-grow text-2xl text-slate-700 overflow-y-auto min-h-0"
+            id="graph-area"
+            class="graph-bg border border-slate-300 rounded-xl shadow-lg relative overflow-hidden p-4"
           >
-            <h2 class="notepad-title text-3xl font-bold text-red-600 pb-2 mb-2">
-              My Notepad
-            </h2>
-            <div class="mb-4">
-              <h3 class="font-bold text-slate-800">Current Path:</h3>
-              <p
-                id="current-path"
-                class="whitespace-normal break-words h-20"
-              ></p>
-            </div>
-            <div>
-              <h3 class="font-bold text-slate-800">Paths Followed</h3>
-              <ol id="final-paths" class="text-xl list-none pl-8">
-                <!-- Completed paths will be added here -->
-              </ol>
-            </div>
+            <svg id="graph-svg" class="w-full h-full">
+              <!-- Matrix will be populated by JS -->
+              <!-- Memory markers container -->
+              <g id="memory-markers-container"></g>
+              <!-- Tracer token -->
+              <circle
+                id="tracer-token"
+                r="18"
+                fill="#facc15"
+                stroke="#ca8a04"
+                stroke-width="3"
+                cx="-100"
+                cy="-100"
+              ></circle>
+            </svg>
           </div>
 
           <div
             class="bg-white border border-slate-200 rounded-xl shadow-lg p-4"
           >
-            <div
-              id="message-box"
-              class="bg-sky-100 border border-sky-300 text-sky-800 p-3 rounded-lg text-center mb-4 min-h-[50px] flex items-center justify-center"
-            >
-              <p id="message-text">Press 'Start' to begin the simulation.</p>
-            </div>
-            <!-- Controls Button Group (vertical stack on small screens, horizontal on larger) -->
             <div class="relative">
               <div
                 id="controls-button-bar"
@@ -333,69 +247,65 @@
                 </button>
               </div>
             </div>
-            <div class="flex items-center gap-3 mt-6 justify-center flex-wrap">
-              <label
-                for="speed-range"
-                class="text-sm font-medium text-slate-700"
-                >Speed</label
-              >
-              <input
-                type="range"
-                id="speed-range"
-                min="300"
-                max="2000"
-                step="50"
-                value="500"
-                class="w-48 accent-indigo-600 cursor-pointer"
-              />
-              <span
-                id="speed-display"
-                class="text-xs text-slate-600 tabular-nums w-16 text-right"
-                >650 ms</span
-              >
-              <span class="text-[10px] uppercase tracking-wide text-slate-400"
-                >(Fast → Slow)</span
-              >
-            </div>
-            <!-- Inline quick speed controls (always visible even if top panel collapsed) -->
-            <div
-              id="inline-speed-controls"
-              class="mt-4 flex items-center justify-center gap-3"
-            >
-              <button
-                id="speed-down-btn"
-                type="button"
-                class="action-button bg-slate-500 text-white font-semibold px-2 py-1 rounded shadow text-xs"
-                aria-label="Decrease speed"
-              >
-                +
-              </button>
-              <div class="text-[11px] text-slate-600 tracking-wide">
-                <span class="font-medium">Speed:</span>
-                <span id="speed-inline-display" class="tabular-nums">650</span>
-                ms
-              </div>
-              <button
-                id="speed-up-btn"
-                type="button"
-                class="action-button bg-slate-500 text-white font-semibold px-2 py-1 rounded shadow text-xs"
-                aria-label="Increase speed"
-              >
-                -
-              </button>
-            </div>
-            <!-- Mobile only notepad toggle -->
-            <div class="mt-6 text-center sm:hidden">
-              <button
-                id="toggle-notepad-btn"
-                class="mobile-toggle-btn action-button bg-slate-700 text-white font-semibold py-2 px-5 rounded-md shadow"
-                type="button"
-                aria-expanded="false"
-                aria-controls="notepad-panel"
-                data-state="Show Notepad"
-              ></button>
-            </div>
           </div>
+        </div>
+      </div>
+
+      <div class="bg-white border border-slate-200 rounded-xl shadow-lg p-4">
+        <div
+          id="message-box"
+          class="bg-sky-100 border border-sky-300 text-sky-800 p-3 rounded-lg text-center mb-4 min-h-[50px] flex items-center justify-center"
+        >
+          <p id="message-text">Press 'Start' to begin the simulation.</p>
+        </div>
+        <div class="flex items-center gap-3 mt-6 justify-center flex-wrap">
+          <label for="speed-range" class="text-sm font-medium text-slate-700"
+            >Speed</label
+          >
+          <input
+            type="range"
+            id="speed-range"
+            min="300"
+            max="2000"
+            step="50"
+            value="500"
+            class="w-48 accent-indigo-600 cursor-pointer"
+          />
+          <span
+            id="speed-display"
+            class="text-xs text-slate-600 tabular-nums w-16 text-right"
+            >650 ms</span
+          >
+          <span class="text-[10px] uppercase tracking-wide text-slate-400"
+            >(Fast → Slow)</span
+          >
+        </div>
+        <!-- Inline quick speed controls (always visible even if top panel collapsed) -->
+        <div
+          id="inline-speed-controls"
+          class="mt-4 flex items-center justify-center gap-3"
+        >
+          <button
+            id="speed-down-btn"
+            type="button"
+            class="action-button bg-slate-500 text-white font-semibold px-2 py-1 rounded shadow text-xs"
+            aria-label="Decrease speed"
+          >
+            +
+          </button>
+          <div class="text-[11px] text-slate-600 tracking-wide">
+            <span class="font-medium">Speed:</span>
+            <span id="speed-inline-display" class="tabular-nums">650</span>
+            ms
+          </div>
+          <button
+            id="speed-up-btn"
+            type="button"
+            class="action-button bg-slate-500 text-white font-semibold px-2 py-1 rounded shadow text-xs"
+            aria-label="Increase speed"
+          >
+            -
+          </button>
         </div>
       </div>
     </div>
@@ -404,7 +314,7 @@
       document.addEventListener("DOMContentLoaded", () => {
         const svg = document.getElementById("graph-svg");
         const memoryMarkersContainer = document.getElementById(
-          "memory-markers-container"
+          "memory-markers-container",
         );
         const tracerToken = document.getElementById("tracer-token");
 
@@ -426,27 +336,21 @@
           document.getElementById("phrasePresetSelect");
         const controlsPanel = document.getElementById("controls-panel");
         const toggleControlsBtn = document.getElementById(
-          "toggle-controls-btn"
+          "toggle-controls-btn",
         );
         const controlsBody = document.getElementById("controls-body");
         const controlsToggleLabel = document.getElementById(
-          "controls-toggle-label"
+          "controls-toggle-label",
         );
         const controlsChevron = document.getElementById("controls-chevron");
         const controlsSummary = document.getElementById("controls-summary");
         const mValueMinLabelMobile = document.getElementById(
-          "mValueMinLabel_mobile"
+          "mValueMinLabel_mobile",
         );
         const mValueMaxLabelMobile = document.getElementById(
-          "mValueMaxLabel_mobile"
+          "mValueMaxLabel_mobile",
         );
-
-        const currentPathEl = document.getElementById("current-path");
-        const finalPathsEl = document.getElementById("final-paths");
         const messageText = document.getElementById("message-text");
-        const rightColumn = document.getElementById("right-column");
-        const toggleNotepadBtn = document.getElementById("toggle-notepad-btn");
-        const notepadEl = document.querySelector(".notepad");
 
         let letterMatrix,
           graph,
@@ -500,20 +404,19 @@
 
         function calculateCellPositions(rows, cols) {
           const positions = {};
-          const cellWidth = 100 / cols;
-          const cellHeight = 100 / rows;
+          const cellSize = 100;
 
           for (let i = 0; i < rows; i++) {
             for (let j = 0; j < cols; j++) {
               const nodeId = `${i},${j}`;
               positions[nodeId] = {
-                x: `${j * cellWidth}%`,
-                y: `${i * cellHeight}%`,
-                cx: `${j * cellWidth + cellWidth / 2}%`,
-                cy: `${i * cellHeight + cellHeight / 2}%`,
-                width: `${cellWidth}%`,
-                height: `${cellHeight}%`,
-                radius: `${Math.min(cellWidth, cellHeight) / 3}%`,
+                x: j * cellSize,
+                y: i * cellSize,
+                cx: j * cellSize + cellSize / 2,
+                cy: i * cellSize + cellSize / 2,
+                width: cellSize,
+                height: cellSize,
+                radius: cellSize / 3,
               };
             }
           }
@@ -526,7 +429,7 @@
           if (!result) {
             svg.innerHTML = "";
             showMessage(
-              "Error: Invalid input. Please check the phrase and width value."
+              "Error: Invalid input. Please check the phrase and width value.",
             );
             startBtn.disabled = true;
             advanceBtn.disabled = true;
@@ -548,9 +451,6 @@
           state = initializeState();
           drawMatrixGrid();
           adjustGraphSize();
-
-          currentPathEl.innerHTML = "";
-          finalPathsEl.innerHTML = "";
           memoryMarkersContainer.innerHTML = "";
           tracerToken.setAttribute("cx", "-100");
           tracerToken.setAttribute("cy", "-100");
@@ -577,9 +477,11 @@
 
         function drawMatrixGrid() {
           svg.innerHTML = "";
+          svg.setAttribute("viewBox", `0 0 ${numCols * 100} ${numRows * 100}`);
+          svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
           const gridContainer = document.createElementNS(
             "http://www.w3.org/2000/svg",
-            "g"
+            "g",
           );
 
           for (let i = 0; i < numRows; i++) {
@@ -588,11 +490,11 @@
               const pos = cellPositions[nodeId];
               const g = document.createElementNS(
                 "http://www.w3.org/2000/svg",
-                "g"
+                "g",
               );
               const rect = document.createElementNS(
                 "http://www.w3.org/2000/svg",
-                "rect"
+                "rect",
               );
               rect.setAttribute("x", pos.x);
               rect.setAttribute("y", pos.y);
@@ -606,7 +508,7 @@
 
               const text = document.createElementNS(
                 "http://www.w3.org/2000/svg",
-                "text"
+                "text",
               );
               text.setAttribute("x", pos.cx);
               text.setAttribute("y", pos.cy);
@@ -633,7 +535,7 @@
           const verticalPadding = 32; // account for internal padding / borders
           const targetMinHeight = Math.max(
             numRows * minCellSize + verticalPadding,
-            340
+            340,
           );
           graphArea.style.minHeight = targetMinHeight + "px";
         }
@@ -674,15 +576,20 @@
         }
 
         function addMemoryMarker(node) {
-          if (document.getElementById(`marker-${node.replace(",", "-")}`))
-            return;
+          const [row] = node.split(",");
+          Array.from(memoryMarkersContainer.children).forEach((marker) => {
+            if (marker.dataset.row === row) {
+              marker.remove();
+            }
+          });
           const pos = cellPositions[node];
           const marker = document.createElementNS(
             "http://www.w3.org/2000/svg",
-            "circle"
+            "circle",
           );
           marker.setAttribute("id", `marker-${node.replace(",", "-")}`);
           marker.setAttribute("class", "memory-marker");
+          marker.dataset.row = row;
           marker.setAttribute("cx", pos.cx);
           marker.setAttribute("cy", pos.cy);
           marker.setAttribute("r", pos.radius);
@@ -695,7 +602,7 @@
 
         function removeMemoryMarker(node) {
           const marker = document.getElementById(
-            `marker-${node.replace(",", "-")}`
+            `marker-${node.replace(",", "-")}`,
           );
           if (marker) marker.remove();
         }
@@ -705,12 +612,23 @@
           return letterMatrix[parseInt(row)][parseInt(col)];
         }
 
-        function updateUI() {
-          const pathLetters = state.pathStack.map(getLetterFromNodeId);
-          currentPathEl.innerHTML = pathLetters.join("");
-          // Show only the count of paths discovered so far (not the full list)
-          finalPathsEl.innerHTML = `<li class=\"font-semibold\">${state.foundPaths.length}</li>`;
+        function setAutoButtonState(isRunning) {
+          if (isRunning) {
+            autoBtn.disabled = false;
+            autoBtn.textContent = "Stop";
+            autoBtn.classList.remove("bg-purple-600");
+            autoBtn.classList.add("bg-rose-600");
+            autoBtn.dataset.mode = "running";
+          } else {
+            autoBtn.disabled = state.isFinished;
+            autoBtn.textContent = "Auto";
+            autoBtn.classList.remove("bg-rose-600");
+            autoBtn.classList.add("bg-purple-600");
+            autoBtn.dataset.mode = "stopped";
+          }
+        }
 
+        function updateUI() {
           advanceBtn.disabled =
             !state.isStarted || state.isFinished || isAtEnd(state.currentNode);
           backtrackBtn.disabled =
@@ -720,18 +638,8 @@
           if (state.isAutoRunning) {
             advanceBtn.disabled = true;
             backtrackBtn.disabled = true;
-            autoBtn.disabled = false;
-            autoBtn.textContent = "Stop";
-            autoBtn.classList.remove("bg-purple-600");
-            autoBtn.classList.add("bg-rose-600");
-            autoBtn.dataset.mode = "running";
-          } else {
-            autoBtn.disabled = state.isFinished; // allow before manual start
-            autoBtn.textContent = "Auto";
-            autoBtn.classList.remove("bg-rose-600");
-            autoBtn.classList.add("bg-purple-600");
-            autoBtn.dataset.mode = "stopped";
           }
+          setAutoButtonState(state.isAutoRunning);
 
           if (state.isFinished) {
             startBtn.textContent = "Restart";
@@ -741,16 +649,6 @@
             startBtn.textContent = "Start";
             startBtn.classList.remove("bg-indigo-600");
             startBtn.classList.add("bg-blue-600");
-          }
-          // Update mobile notepad toggle state label if present
-          if (toggleNotepadBtn && window.innerWidth < 640) {
-            const hidden =
-              notepadEl.classList.contains("hidden") ||
-              rightColumn.classList.contains("mobile-collapsed");
-            toggleNotepadBtn.dataset.state = hidden
-              ? "Show Notepad"
-              : "Hide Notepad";
-            toggleNotepadBtn.setAttribute("aria-expanded", String(!hidden));
           }
           // Update controls summary for mobile
           if (controlsSummary && window.innerWidth < 640) {
@@ -795,7 +693,7 @@
           memoryMarkersContainer.innerHTML = "";
           moveToken(START_NODE);
           showMessage(
-            `Tracer token placed at the start. Click 'Advance' to explore.`
+            `Tracer token placed at the start. Click 'Advance' to explore.`,
           );
           updateUI();
         }
@@ -831,14 +729,12 @@
 
           if (nextNode === END_NODE) {
             state.foundPaths.push([...state.pathStack]);
-            showMessage(
-              `🎉 Path Found! Copied to notepad. Backtrack to find more.`
-            );
+            showMessage(`🎉 Path Found! Backtrack to find more.`);
           } else {
             showMessage(
               `Moved to letter '${getLetterFromNodeId(
-                nextNode
-              )}'. Click 'Advance' to continue.`
+                nextNode,
+              )}'. Click 'Advance' to continue.`,
             );
           }
           updateUI();
@@ -867,8 +763,8 @@
                 moveToken(node);
                 showMessage(
                   `Backtracked to fork at '${getLetterFromNodeId(
-                    node
-                  )}'. Click 'Advance' to try the next path.`
+                    node,
+                  )}'. Click 'Advance' to try the next path.`,
                 );
                 updateUI();
                 return;
@@ -882,7 +778,7 @@
                   state.isFinished = true;
                   moveToken(node);
                   showMessage(
-                    `🏁 All paths found! You have returned to the start.`
+                    `🏁 All paths found! You have returned to the start.`,
                   );
                   updateUI();
                   return;
@@ -936,6 +832,7 @@
           if (autoIntervalId) return; // already running
           if (!state.isStarted) handleStart();
           state.isAutoRunning = true;
+          setAutoButtonState(true);
           // ensure UI reflects auto mode
           updateUI();
           showMessage("Automatic exploration started.");
@@ -949,6 +846,7 @@
           }
           if (state.isAutoRunning) {
             state.isAutoRunning = false;
+            setAutoButtonState(false);
             updateUI();
             showMessage(msg || "Automatic exploration stopped.");
           }
@@ -973,7 +871,7 @@
           }
           if (cleanLen === 0) {
             showMessage(
-              "Error: Phrase must contain at least one non-space character."
+              "Error: Phrase must contain at least one non-space character.",
             );
             return;
           }
@@ -983,7 +881,7 @@
           }
           if (newM > cleanLen) {
             showMessage(
-              `Error: 'm' (${newM}) cannot be greater than (non-space) length (${cleanLen}).`
+              `Error: 'm' (${newM}) cannot be greater than (non-space) length (${cleanLen}).`,
             );
             return;
           }
@@ -1101,7 +999,7 @@
 
         // Speed slider + inline buttons logic
         const speedInlineDisplay = document.getElementById(
-          "speed-inline-display"
+          "speed-inline-display",
         );
         const speedDownBtn = document.getElementById("speed-down-btn");
         const speedUpBtn = document.getElementById("speed-up-btn");
@@ -1141,40 +1039,9 @@
 
         // Initial Draw
         setupSimulation(mainStringInput.value, parseInt(mValueInput.value));
-
-        // --- Mobile notepad toggle logic ---
-        function applyMobileLayout() {
-          if (window.innerWidth < 640) {
-            // Collapse by default if not already decided
-            if (!rightColumn.classList.contains("mobile-init")) {
-              rightColumn.classList.add("mobile-collapsed", "mobile-init");
-            }
-            notepadEl.setAttribute("id", "notepad-panel");
-            if (toggleNotepadBtn) toggleNotepadBtn.classList.remove("hidden");
-          } else {
-            rightColumn.classList.remove("mobile-collapsed");
-            if (toggleNotepadBtn) toggleNotepadBtn.classList.add("hidden");
-            notepadEl.classList.remove("hidden");
-          }
-          updateUI();
-        }
-
-        if (toggleNotepadBtn) {
-          toggleNotepadBtn.addEventListener("click", () => {
-            rightColumn.classList.toggle("mobile-collapsed");
-            if (rightColumn.classList.contains("mobile-collapsed")) {
-              notepadEl.classList.add("hidden");
-            } else {
-              notepadEl.classList.remove("hidden");
-            }
-            updateUI();
-          });
-        }
         window.addEventListener("resize", () => {
-          applyMobileLayout();
           adjustGraphSize();
         });
-        applyMobileLayout();
         adjustGraphSize();
 
         // --- Mobile controls collapse logic ---
