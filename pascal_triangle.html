@@ -152,100 +152,121 @@
     </style>
   </head>
   <body class="p-4 md:p-8">
-    <div class="text-center mb-8 max-w-4xl mx-auto">
-      <h1 class="text-3xl md:text-4xl font-bold text-slate-800">
+    <div class="mb-8 max-w-6xl mx-auto">
+      <h1
+        class="text-3xl md:text-4xl font-bold text-slate-800 text-center mb-6"
+      >
         Pascal’s Triangle and Florentian Labyrinths
       </h1>
 
-      <p class="mt-2 text-base md:text-lg text-slate-600 text-left">
-        This shows the relationship between Pascal’s Triangle and labyrinths
-        like Florentius’s. For Pascal’s Triangle, each cell is the sum of the
-        two cells immediately above it and to the right. This turns out to just
-        be the number of ways to choosing
-        <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>k</mi></math>
-        unordered outcomes from
-        <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>N</mi></math>
-        possibilities, represented as
-        <math xmlns="http://www.w3.org/1998/Math/MathML">
-          <mrow>
-            <mo>(</mo>
-            <!-- Use mfrac with linethickness="0" to hide the fraction bar -->
-            <mfrac linethickness="0">
-              <mrow><mi>N</mi></mrow>
-              <mrow><mi>k</mi></mrow>
-            </mfrac>
-            <mo>)</mo>
-          </mrow> </math
-        >.
-      </p>
-      <p class="mt-2 text-base md:text-lg text-slate-600 text-left">
-        For Florentian Labyrinths created using a phrase that is
-        <i>len</i> characters long, you create a matrix of
-        <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>n</mi></math>
-        columns, resulting in
-        <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>m</mi></math>
-        rows of “sliding windows,” where
-        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          ><mrow
-            ><mi>m</mi><mo>=</mo><mi>len</mi><mo>-</mo><mi>n</mi><mo>+</mo
-            ><mn>1</mn></mrow
-          ></math
-        >. A single path has
-        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          ><mrow><mi>m</mi><mo>+</mo><mi>n</mi><mo>-</mo><mn>2</mn></mrow></math
+      <div
+        class="grid grid-cols-1 lg:grid-cols-[minmax(0,1.6fr)_minmax(280px,1fr)] gap-8 items-start"
+      >
+        <div>
+          <p class="mt-2 text-base md:text-lg text-slate-600 text-left">
+            This shows the relationship between Pascal’s Triangle and labyrinths
+            like Florentius’s. For Pascal’s Triangle, each cell is the sum of
+            the two cells immediately above it and to the right. This turns out
+            to just be the number of ways to choosing
+            <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>k</mi></math>
+            unordered outcomes from
+            <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>N</mi></math>
+            possibilities, represented as
+            <math xmlns="http://www.w3.org/1998/Math/MathML">
+              <mrow>
+                <mo>(</mo>
+                <!-- Use mfrac with linethickness="0" to hide the fraction bar -->
+                <mfrac linethickness="0">
+                  <mrow><mi>N</mi></mrow>
+                  <mrow><mi>k</mi></mrow>
+                </mfrac>
+                <mo>)</mo>
+              </mrow> </math
+            >.
+          </p>
+          <p class="mt-2 text-base md:text-lg text-slate-600 text-left">
+            For Florentian Labyrinths created using a phrase that is
+            <i>len</i> characters long, you create a matrix of
+            <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>n</mi></math>
+            columns, resulting in
+            <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>m</mi></math>
+            rows of “sliding windows.” Notice that the number of “sliding
+            windows” (<math xmlns="http://www.w3.org/1998/Math/MathML"
+              ><mi>m</mi></math
+            >) is based on the length of the phrase used; If
+            <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>len</mi></math>
+            is the length of the string, then
+            <math xmlns="http://www.w3.org/1998/Math/MathML"
+              ><mrow
+                ><mi>m</mi><mo>=</mo><mi>len</mi><mo>-</mo><mi>n</mi><mo>+</mo
+                ><mn>1</mn></mrow
+              ></math
+            >. A single path has
+            <math xmlns="http://www.w3.org/1998/Math/MathML"
+              ><mrow
+                ><mi>m</mi><mo>+</mo><mi>n</mi><mo>-</mo><mn>2</mn></mrow
+              ></math
+            >
+            moves. The number of possible down moves is
+            <math xmlns="http://www.w3.org/1998/Math/MathML"
+              ><mrow><mi>m</mi><mo>-</mo><mn>1</mn></mrow></math
+            >, so the total number of paths is
+            <math xmlns="http://www.w3.org/1998/Math/MathML">
+              <mrow>
+                <mo>(</mo>
+                <!-- Use mfrac with linethickness="0" to hide the fraction bar -->
+                <mfrac linethickness="0">
+                  <mrow
+                    ><mi>m</mi><mo>+</mo><mi>n</mi><mo>-</mo><mn>2</mn></mrow
+                  >
+                  <mrow><mi>m</mi><mo>-</mo><mn>1</mn></mrow>
+                </mfrac>
+                <mo>)</mo>
+              </mrow> </math
+            >.
+          </p>
+          <p class="mt-2 text-base md:text-lg text-slate-600 text-left">
+            Florentius’s labyrinth is a mirrored labyrinth with the string
+            “FLORENTIUM INDIGNUM MEMORARE”. That phrase is 26 letters long, and
+            with
+            <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>m</mi></math>
+            = 7 and
+            <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>n</mi></math>
+            = 20. This is 177,100 paths, which is the value highlighted in the
+            triangle below. Since it is mirrored, we have
+            <math xmlns="http://www.w3.org/1998/Math/MathML"
+              ><mrow
+                ><mn>177,100</mn><mo>×</mo><mn>2</mn><mo>=</mo
+                ><mn>354,200</mn></mrow
+              ></math
+            >
+            total paths through Florentius’s labyrinth. Because the binomial
+            coefficients are symmetric, the same number of paths can be found in
+            the triangle twice — that is, with
+            <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>m</mi></math>
+            = 20 and
+            <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>n</mi></math>
+            = 7.
+          </p>
+        </div>
+
+        <figure
+          class="lg:sticky lg:top-24 bg-white/90 border border-slate-200 rounded-xl p-3 shadow-sm"
         >
-        moves. The number of possible down moves is
-        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          ><mrow><mi>m</mi><mo>-</mo><mn>1</mn></mrow></math
-        >, so the total number of paths is
-        <math xmlns="http://www.w3.org/1998/Math/MathML">
-          <mrow>
-            <mo>(</mo>
-            <!-- Use mfrac with linethickness="0" to hide the fraction bar -->
-            <mfrac linethickness="0">
-              <mrow><mi>m</mi><mo>+</mo><mi>n</mi><mo>-</mo><mn>2</mn></mrow>
-              <mrow><mi>m</mi><mo>-</mo><mn>1</mn></mrow>
-            </mfrac>
-            <mo>)</mo>
-          </mrow> </math
-        >.
-      </p>
-      <p class="mt-2 text-base md:text-lg text-slate-600 text-left">
-        Florentius’s labyrinth is a mirrored labyrinth with the string
-        “FLORENTIUM INDIGNUM MEMORARE”. That phrase is 26 letters long, and with
-        <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>m</mi></math>
-        = 7 and
-        <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>n</mi></math>
-        = 20. This is 177,100 paths, which is the value highlighted in the
-        triangle below. Since it is mirrored, we have
-        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          ><mrow
-            ><mn>177,100</mn><mo>×</mo><mn>2</mn><mo>=</mo
-            ><mn>354,200</mn></mrow
-          ></math
-        >
-        total paths through Florentius’s labyrinth. Because the binomial
-        coefficients are symmetric, the same number of paths can be found in the
-        triangle twice — that is, with
-        <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>m</mi></math>
-        = 20 and
-        <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>n</mi></math>
-        = 7.
-      </p>
-      <p class="mt-2 text-base md:text-lg text-slate-600 text-left">
-        Notice that the number of “sliding windows” (<math
-          xmlns="http://www.w3.org/1998/Math/MathML"
-          ><mi>m</mi></math
-        >) is based on the length of the phrase used; If
-        <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>len</mi></math> is
-        the length of the string, then
-        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          ><mrow
-            ><mi>m</mi><mo>=</mo><mi>len</mi><mo>-</mo><mi>n</mi><mo>+</mo
-            ><mn>1</mn></mrow
-          ></math
-        >.
-      </p>
+          <img
+            src="Moralia_in_Job_945_-_Laberinto_conmemorativo_-_Biblioteca_Nacional_Cod80.jpeg"
+            alt="Commemorative medieval labyrinth illustration from Moralia in Job, Biblioteca Nacional Codex 80"
+            class="w-full h-auto rounded-lg object-contain max-h-[70vh]"
+          />
+          <figcaption class="mt-3 text-sm text-slate-500 text-center">
+            <a
+              href="https://commons.wikimedia.org/wiki/File:Moralia_in_Job_945_-_Laberinto_conmemorativo_-_Biblioteca_Nacional_Cod80.JPG"
+              >Moralia in Job, folio 945, Biblioteca Nacional, Codex 80.</a
+            >
+            Image from Wikimedia Commons, licensed under CC BY-SA 4.0.
+          </figcaption>
+        </figure>
+      </div>
     </div>
 
     <div class="triangle-header-shell">
