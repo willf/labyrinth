@@ -710,7 +710,7 @@
             for (let b = 0; b < numCols; b++) {
               const colNumberEl = document.createElement("div");
               colNumberEl.className = "column-number";
-              colNumberEl.textContent = `m=${b + 1}`;
+              colNumberEl.textContent = `n=${b + 1}`;
               headerRow.appendChild(colNumberEl);
             }
             headerContainer.appendChild(headerRow);
@@ -734,7 +734,7 @@
               cellDiv.dataset.b = b;
               cellDiv.setAttribute(
                 "aria-label",
-                `len=${a + 1}, m=${b + 1}, value ${num.toLocaleString()}`,
+                `len=${a + 1}, n=${b + 1}, value ${num.toLocaleString()}`,
               );
 
               const len = a + 1;
