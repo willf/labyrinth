@@ -179,11 +179,18 @@
         >.
       </p>
       <p class="mt-2 text-base md:text-lg text-slate-600 text-left">
-        For Florentian Labyrinths, you create a matrix of
+        For Florentian Labyrinths created using a phrase that is
+        <i>len</i> characters long, you create a matrix of
         <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>n</mi></math>
         columns, resulting in
         <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>m</mi></math>
-        rows of “sliding windows.” A single path has
+        rows of “sliding windows,” where
+        <math xmlns="http://www.w3.org/1998/Math/MathML"
+          ><mrow
+            ><mi>m</mi><mo>=</mo><mi>len</mi><mo>-</mo><mi>n</mi><mo>+</mo
+            ><mn>1</mn></mrow
+          ></math
+        >. A single path has
         <math xmlns="http://www.w3.org/1998/Math/MathML"
           ><mrow><mi>m</mi><mo>+</mo><mi>n</mi><mo>-</mo><mn>2</mn></mrow></math
         >
@@ -204,19 +211,13 @@
         >.
       </p>
       <p class="mt-2 text-base md:text-lg text-slate-600 text-left">
-        The original labyrinth also had a mirrored labyrinth with the string
+        Florentius’s labyrinth is a mirrored labyrinth with the string
         “FLORENTIUM INDIGNUM MEMORARE”. That phrase is 26 letters long, and with
         <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>m</mi></math>
         = 7 and
         <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>n</mi></math>
-        = 20, the relation
-        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          ><mrow
-            ><mi>m</mi><mo>=</mo><mi>len</mi><mo>-</mo><mi>n</mi><mo>+</mo
-            ><mn>1</mn></mrow
-          ></math
-        >. This is 177,100 paths, which is the value highlighted in the triangle
-        below. Since it is mirrored, we have
+        = 20. This is 177,100 paths, which is the value highlighted in the
+        triangle below. Since it is mirrored, we have
         <math xmlns="http://www.w3.org/1998/Math/MathML"
           ><mrow
             ><mn>177,100</mn><mo>×</mo><mn>2</mn><mo>=</mo
