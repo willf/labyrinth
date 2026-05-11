@@ -14,13 +14,35 @@
         font-family: Georgia, serif;
         background-color: #f8fafc; /* Tailwind gray-50 */
       }
+      .triangle-header-shell {
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        background-color: rgb(248 250 252 / 0.95);
+        backdrop-filter: blur(2px);
+        border-bottom: 1px solid #e2e8f0;
+      }
+      .triangle-scroll {
+        overflow-x: auto; /* Horizontal scrolling for wide triangles */
+      }
+      .triangle-scroll-header {
+        scrollbar-width: none;
+      }
+      .triangle-scroll-header::-webkit-scrollbar {
+        display: none;
+      }
+      #triangle-header-container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0 1rem;
+      }
       #triangle-container {
         display: flex;
         flex-direction: column;
         align-items: flex-start; /* Align rows to the start */
         gap: 4px; /* Space between rows */
         padding-bottom: 2rem;
-        overflow-x: auto; /* Allow horizontal scrolling for large triangles */
         padding: 1rem;
       }
       .triangle-row {
@@ -35,12 +57,24 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 40px;
+        width: 68px;
+        min-height: 48px;
         font-weight: 600;
         color: #64748b; /* slate-500 */
         font-size: 1rem;
         flex-shrink: 0;
         margin-right: 0.5rem;
+      }
+      .sticky-first-col {
+        position: sticky;
+        left: 0;
+        z-index: 35;
+        background-color: #f8fafc;
+        box-shadow: 2px 0 4px -1px rgb(0 0 0 / 0.08);
+      }
+      .triangle-header-shell .sticky-first-col {
+        z-index: 45;
+        background-color: #f8fafc;
       }
       .column-number {
         display: flex;
@@ -94,18 +128,7 @@
           0 0 22px 4px rgb(220 38 38 / 0.7),
           0 1px 3px 0 rgb(0 0 0 / 0.1),
           0 1px 2px -1px rgb(0 0 0 / 0.1);
-        animation: targetPulse 1.4s ease-in-out infinite;
         z-index: 20;
-      }
-
-      @keyframes targetPulse {
-        0%,
-        100% {
-          transform: scale(1);
-        }
-        50% {
-          transform: scale(1.08);
-        }
       }
 
       /* Responsive adjustments */
@@ -224,7 +247,18 @@
       </p>
     </div>
 
-    <div id="triangle-container"></div>
+    <div class="triangle-header-shell">
+      <div
+        id="triangle-header-scroll"
+        class="triangle-scroll triangle-scroll-header"
+      >
+        <div id="triangle-header-container"></div>
+      </div>
+    </div>
+
+    <div id="triangle-body-scroll" class="triangle-scroll">
+      <div id="triangle-container"></div>
+    </div>
 
     <div
       class="max-w-md mx-auto p-4 bg-white rounded-lg shadow-sm flex flex-col justify-center items-center gap-4 mb-8"
@@ -253,6 +287,11 @@
     <script>
       document.addEventListener("DOMContentLoaded", () => {
         const container = document.getElementById("triangle-container");
+        const headerContainer = document.getElementById(
+          "triangle-header-container",
+        );
+        const headerScroll = document.getElementById("triangle-header-scroll");
+        const bodyScroll = document.getElementById("triangle-body-scroll");
         const rowsSlider = document.getElementById("rows-slider");
         const sliderValueEl = document.getElementById("slider-value");
 
@@ -276,6 +315,7 @@
 
         function displayTriangle(triangle) {
           container.innerHTML = ""; // Clear previous triangle
+          headerContainer.innerHTML = "";
           const fragment = document.createDocumentFragment();
 
           const lastRow =
@@ -291,9 +331,9 @@
 
             // Add a spacer to align with the 'a=' labels.
             const spacer = document.createElement("div");
-            spacer.className = "row-number";
+            spacer.className = "row-number sticky-first-col";
             spacer.style.opacity = "0"; // Make it invisible but take up space
-            spacer.style.width = "28px";
+            spacer.style.width = "68px";
             spacer.style.marginRight = "0";
             headerRow.appendChild(spacer);
 
@@ -304,7 +344,7 @@
               colNumberEl.textContent = `m=${b + 1}`;
               headerRow.appendChild(colNumberEl);
             }
-            fragment.appendChild(headerRow);
+            headerContainer.appendChild(headerRow);
           }
 
           triangle.forEach((row, a) => {
@@ -312,7 +352,7 @@
             rowDiv.className = "triangle-row";
 
             const rowNumberEl = document.createElement("div");
-            rowNumberEl.className = "row-number";
+            rowNumberEl.className = "row-number sticky-first-col";
             rowNumberEl.textContent = `len=${a + 1}`;
             rowDiv.appendChild(rowNumberEl);
 
@@ -341,6 +381,7 @@
 
                 if (lightness < 70) {
                   cellDiv.style.color = "#f8fafc"; // Use a light color for text on dark backgrounds
+                  cellDiv.dataset.darkText = "1";
                 }
               }
 
@@ -368,6 +409,21 @@
           addHoverListeners();
         }
 
+        // Keep the sticky header horizontally aligned with the triangle body.
+        let syncingHeader = false;
+        bodyScroll.addEventListener("scroll", () => {
+          if (syncingHeader) return;
+          syncingHeader = true;
+          headerScroll.scrollLeft = bodyScroll.scrollLeft;
+          syncingHeader = false;
+        });
+        headerScroll.addEventListener("scroll", () => {
+          if (syncingHeader) return;
+          syncingHeader = true;
+          bodyScroll.scrollLeft = headerScroll.scrollLeft;
+          syncingHeader = false;
+        });
+
         function addHoverListeners() {
           const cells = document.querySelectorAll(".triangle-cell");
 
@@ -375,6 +431,8 @@
             cell.addEventListener("mouseenter", () => {
               const a = parseInt(cell.dataset.a);
               const b = parseInt(cell.dataset.b);
+              // Override inline color so the CSS :hover color is always readable
+              cell.style.color = "";
               if (a > 0) {
                 const parent1 = document.querySelector(
                   `.triangle-cell[data-a="${a - 1}"][data-b="${b - 1}"]`,
@@ -391,6 +449,10 @@
             cell.addEventListener("mouseleave", () => {
               const a = parseInt(cell.dataset.a);
               const b = parseInt(cell.dataset.b);
+              // Restore inline color for dark cells
+              if (cell.dataset.darkText === "1") {
+                cell.style.color = "#f8fafc";
+              }
               if (a > 0) {
                 const parent1 = document.querySelector(
                   `.triangle-cell[data-a="${a - 1}"][data-b="${b - 1}"]`,
