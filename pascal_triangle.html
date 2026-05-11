@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pascal’s Triangle</title>
+    <title>Pascal’s Triangle and Florentian Labyrinths</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap"
@@ -11,14 +11,14 @@
     />
     <style>
       body {
-        font-family: "Inter", sans-serif;
+        font-family: Georgia, serif;
         background-color: #f8fafc; /* Tailwind gray-50 */
       }
       #triangle-container {
         display: flex;
         flex-direction: column;
         align-items: flex-start; /* Align rows to the start */
-        gap: 8px; /* Space between rows */
+        gap: 4px; /* Space between rows */
         padding-bottom: 2rem;
         overflow-x: auto; /* Allow horizontal scrolling for large triangles */
         padding: 1rem;
@@ -27,7 +27,7 @@
         display: flex;
         align-items: center; /* Vertically center row number with cells */
         justify-content: center;
-        gap: 12px; /* Space between numbers in a row */
+        gap: 4px; /* Space between numbers in a row */
         flex-shrink: 0;
         min-height: 48px; /* Ensure consistent row height */
       }
@@ -38,20 +38,21 @@
         width: 40px;
         font-weight: 600;
         color: #64748b; /* slate-500 */
-        font-size: 0.9rem;
+        font-size: 1rem;
         flex-shrink: 0;
-        margin-right: 1rem;
+        margin-right: 0.5rem;
       }
       .column-number {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 48px;
+        width: 40px;
         height: 30px;
         font-weight: 600;
         color: #94a3b8; /* slate-400 */
-        font-size: 0.8rem;
+        font-size: 1rem;
         flex-shrink: 0;
+        margin-right: 0.5rem;
       }
       .triangle-cell {
         display: flex;
@@ -82,6 +83,30 @@
         box-shadow: 0 0 0 3px #fbbf24; /* amber-400 */
         z-index: 10;
       }
+      .range-highlight {
+        border: 2px solid #86efac;
+      }
+      .target-value-highlight {
+        border: 2px solid #ffffff;
+        box-shadow:
+          0 0 0 4px #b91c1c,
+          0 0 0 8px #fecaca,
+          0 0 22px 4px rgb(220 38 38 / 0.7),
+          0 1px 3px 0 rgb(0 0 0 / 0.1),
+          0 1px 2px -1px rgb(0 0 0 / 0.1);
+        animation: targetPulse 1.4s ease-in-out infinite;
+        z-index: 20;
+      }
+
+      @keyframes targetPulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.08);
+        }
+      }
 
       /* Responsive adjustments */
       @media (max-width: 768px) {
@@ -106,18 +131,96 @@
   <body class="p-4 md:p-8">
     <div class="text-center mb-8 max-w-4xl mx-auto">
       <h1 class="text-3xl md:text-4xl font-bold text-slate-800">
-        Pascal’s Triangle
+        Pascal’s Triangle and Florentian Labyrinths
       </h1>
-      <p class="mt-2 text-slate-600">
-        This is an illustration of Pascal’s Triangle, a triangular array of
-        binomial coefficients. Each cell value is a binomial coefficient C(N,
-        k), calculated as the sum of the two numbers directly above it.
+
+      <p class="mt-2 text-base md:text-lg text-slate-600 text-left">
+        This shows the relationship between Pascal’s Triangle and labyrinths
+        like Florentius’s. For Pascal’s Triangle, each cell is the sum of the
+        two cells immediately above it and to the right. This turns out to just
+        be the number of ways to choosing
+        <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>k</mi></math>
+        unordered outcomes from
+        <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>N</mi></math>
+        possibilities, represented as
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <mrow>
+            <mo>(</mo>
+            <!-- Use mfrac with linethickness="0" to hide the fraction bar -->
+            <mfrac linethickness="0">
+              <mrow><mi>N</mi></mrow>
+              <mrow><mi>k</mi></mrow>
+            </mfrac>
+            <mo>)</mo>
+          </mrow> </math
+        >.
       </p>
-      <p class="mt-2 text-slate-600">
-        For Florentinus's Labyrinth, this triangle represents the number of
-        unique paths to reach each cell when moving only right or down from the
-        top-left corner. `N` represents the length of the string - 2, and `k`
-        represents the number of sliding windows over the string - 1.
+      <p class="mt-2 text-base md:text-lg text-slate-600 text-left">
+        For Florentian Labyrinths, you create a matrix of
+        <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>n</mi></math>
+        columns, resulting in
+        <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>m</mi></math>
+        rows of “sliding windows.” A single path has
+        <math xmlns="http://www.w3.org/1998/Math/MathML"
+          ><mrow><mi>m</mi><mo>+</mo><mi>n</mi><mo>-</mo><mn>2</mn></mrow></math
+        >
+        moves. The number of possible down moves is
+        <math xmlns="http://www.w3.org/1998/Math/MathML"
+          ><mrow><mi>m</mi><mo>-</mo><mn>1</mn></mrow></math
+        >, so the total number of paths is
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <mrow>
+            <mo>(</mo>
+            <!-- Use mfrac with linethickness="0" to hide the fraction bar -->
+            <mfrac linethickness="0">
+              <mrow><mi>m</mi><mo>+</mo><mi>n</mi><mo>-</mo><mn>2</mn></mrow>
+              <mrow><mi>m</mi><mo>-</mo><mn>1</mn></mrow>
+            </mfrac>
+            <mo>)</mo>
+          </mrow> </math
+        >.
+      </p>
+      <p class="mt-2 text-base md:text-lg text-slate-600 text-left">
+        The original labyrinth also had a mirrored labyrinth with the string
+        “FLORENTIUM INDIGNUM MEMORARE”. That phrase is 26 letters long, and with
+        <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>m</mi></math>
+        = 7 and
+        <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>n</mi></math>
+        = 20, the relation
+        <math xmlns="http://www.w3.org/1998/Math/MathML"
+          ><mrow
+            ><mi>m</mi><mo>=</mo><mi>len</mi><mo>-</mo><mi>n</mi><mo>+</mo
+            ><mn>1</mn></mrow
+          ></math
+        >. This is 177,100 paths, which is the value highlighted in the triangle
+        below. Since it is mirrored, we have
+        <math xmlns="http://www.w3.org/1998/Math/MathML"
+          ><mrow
+            ><mn>177,100</mn><mo>×</mo><mn>2</mn><mo>=</mo
+            ><mn>354,200</mn></mrow
+          ></math
+        >
+        total paths through Florentius’s labyrinth. Because the binomial
+        coefficients are symmetric, the same number of paths can be found in the
+        triangle twice — that is, with
+        <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>m</mi></math>
+        = 20 and
+        <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>n</mi></math>
+        = 7.
+      </p>
+      <p class="mt-2 text-base md:text-lg text-slate-600 text-left">
+        Notice that the number of “sliding windows” (<math
+          xmlns="http://www.w3.org/1998/Math/MathML"
+          ><mi>m</mi></math
+        >) is based on the length of the phrase used; If
+        <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>len</mi></math> is
+        the length of the string, then
+        <math xmlns="http://www.w3.org/1998/Math/MathML"
+          ><mrow
+            ><mi>m</mi><mo>=</mo><mi>len</mi><mo>-</mo><mi>n</mi><mo>+</mo
+            ><mn>1</mn></mrow
+          ></math
+        >.
       </p>
     </div>
 
@@ -130,20 +233,20 @@
         <label
           for="rows-slider"
           class="text-slate-700 font-medium whitespace-nowrap"
-          >Number of Rows:</label
+          >Number of Rows to display:</label
         >
         <input
           type="range"
           id="rows-slider"
-          value="22"
+          value="30"
           min="10"
-          max="30"
+          max="50"
           class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
         />
         <span
           id="slider-value"
           class="font-semibold text-slate-700 w-8 text-center"
-          >22</span
+          >30</span
         >
       </div>
     </div>
@@ -184,19 +287,21 @@
           if (triangle.length > 0) {
             const headerRow = document.createElement("div");
             headerRow.className = "triangle-row";
-            headerRow.style.marginBottom = "8px";
+            headerRow.style.marginBottom = "0px";
 
             // Add a spacer to align with the 'a=' labels.
             const spacer = document.createElement("div");
             spacer.className = "row-number";
             spacer.style.opacity = "0"; // Make it invisible but take up space
+            spacer.style.width = "28px";
+            spacer.style.marginRight = "0";
             headerRow.appendChild(spacer);
 
             const numCols = Math.max(...triangle.map((r) => r.length));
             for (let b = 0; b < numCols; b++) {
               const colNumberEl = document.createElement("div");
               colNumberEl.className = "column-number";
-              colNumberEl.textContent = `k=${b}\n(m=${b + 1})`;
+              colNumberEl.textContent = `m=${b + 1}`;
               headerRow.appendChild(colNumberEl);
             }
             fragment.appendChild(headerRow);
@@ -208,7 +313,7 @@
 
             const rowNumberEl = document.createElement("div");
             rowNumberEl.className = "row-number";
-            rowNumberEl.textContent = `N=${a}\n(len=${a + 2})`;
+            rowNumberEl.textContent = `len=${a + 1}`;
             rowDiv.appendChild(rowNumberEl);
 
             row.forEach((num, b) => {
@@ -217,6 +322,14 @@
               cellDiv.textContent = num.toLocaleString();
               cellDiv.dataset.a = a;
               cellDiv.dataset.b = b;
+
+              if (num >= 25 && num <= 1001) {
+                cellDiv.classList.add("range-highlight");
+              }
+
+              if (num === 177100) {
+                cellDiv.classList.add("target-value-highlight");
+              }
 
               if (num > 1) {
                 const intensity = Math.log10(num) / logMax;
@@ -233,7 +346,9 @@
 
               // Dynamically adjust font size for large numbers
               const numChars = cellDiv.textContent.length;
-              if (numChars > 9) {
+              if (numChars >= 12) {
+                cellDiv.style.fontSize = "0.35rem";
+              } else if (numChars > 9) {
                 cellDiv.style.fontSize = "0.55rem";
               } else if (numChars > 6) {
                 cellDiv.style.fontSize = "0.65rem";
