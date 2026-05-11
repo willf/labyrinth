@@ -409,7 +409,7 @@
 
         function calculateCellPositions(rows, cols) {
           const positions = {};
-          const cellSize = 120;
+          const cellSize = 160;
 
           for (let i = 0; i < rows; i++) {
             for (let j = 0; j < cols; j++) {
@@ -482,7 +482,7 @@
 
         function drawMatrixGrid() {
           svg.innerHTML = "";
-          svg.setAttribute("viewBox", `0 0 ${numCols * 120} ${numRows * 120}`);
+          svg.setAttribute("viewBox", `0 0 ${numCols * 160} ${numRows * 160}`);
           svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
           const gridContainer = document.createElementNS(
             "http://www.w3.org/2000/svg",
@@ -536,8 +536,8 @@
           const graphArea = document.getElementById("graph-area");
           if (!graphArea || !numRows || !numCols) return;
           // Minimum pixel size per cell to keep letters legible
-          const minCellSize = 70; // px
-          const maxCellSize = 120; // px (cap individual cell size)
+          const minCellSize = 100; // px
+          const maxCellSize = 160; // px (cap individual cell size)
           const padding = 32; // account for internal padding / borders
           const targetMinHeight = Math.max(
             numRows * minCellSize + padding,
