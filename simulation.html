@@ -545,13 +545,16 @@
             numRows * minCellSize + padding,
             340,
           );
+          const targetMinWidth = numCols * minCellSize + padding;
           const targetMaxHeight = numRows * maxCellSize + padding;
           const targetMaxWidth = numCols * maxCellSize + padding;
           graphArea.style.minHeight = targetMinHeight + "px";
+          graphArea.style.minWidth = targetMinWidth + "px";
           graphArea.style.maxHeight = targetMaxHeight + "px";
           graphArea.style.maxWidth = targetMaxWidth + "px";
           graphArea.style.marginLeft = "auto";
           graphArea.style.marginRight = "auto";
+          graphArea.style.overflowX = "auto";
         }
 
         // ------------------------------------------------------------
