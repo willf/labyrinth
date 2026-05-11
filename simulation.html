@@ -410,7 +410,8 @@
 
         function calculateCellSize(numCols) {
           const graphArea = document.getElementById("graph-area");
-          const availableWidth = graphArea?.clientWidth || (window.innerWidth - 50);
+          const availableWidth =
+            graphArea?.clientWidth || window.innerWidth - 50;
           const minCellSize = 70; // px
           const maxCellSize = 160; // px
           const padding = 32;
@@ -494,7 +495,10 @@
         function drawMatrixGrid() {
           svg.innerHTML = "";
           const cellSize = calculateCellSize(numCols);
-          svg.setAttribute("viewBox", `0 0 ${numCols * cellSize} ${numRows * cellSize}`);
+          svg.setAttribute(
+            "viewBox",
+            `0 0 ${numCols * cellSize} ${numRows * cellSize}`,
+          );
           svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
           const gridContainer = document.createElementNS(
             "http://www.w3.org/2000/svg",
@@ -552,8 +556,7 @@
           const targetHeight = numRows * cellSize + padding;
           graphArea.style.minHeight = Math.max(targetHeight, 340) + "px";
           graphArea.style.maxHeight = "none";
-          graphArea.style.width = "100%;
-          graphArea.style.marginRight = "auto";
+          graphArea.style.width = "100%";
           graphArea.style.overflowX = "auto";
         }
 
