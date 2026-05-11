@@ -254,7 +254,9 @@
         </div>
       </div>
 
-      <div class="bg-stone-100 border border-stone-300 rounded-xl shadow-lg p-4">
+      <div
+        class="bg-stone-100 border border-stone-300 rounded-xl shadow-lg p-4"
+      >
         <div
           id="message-box"
           class="bg-amber-50 border border-amber-200 text-amber-900 p-3 rounded-lg text-center mb-4 min-h-[50px] flex items-center justify-center"
@@ -505,8 +507,8 @@
               rect.setAttribute("height", pos.height);
 
               let fillClass = "fill-white";
-              if (nodeId === START_NODE) fillClass = "fill-green-200";
-              if (nodeId === END_NODE) fillClass = "fill-red-200";
+              if (nodeId === START_NODE) fillClass = "fill-amber-200";
+              if (nodeId === END_NODE) fillClass = "fill-stone-300";
               rect.setAttribute("class", `stroke-stone-400 ${fillClass}`);
 
               const text = document.createElementNS(
