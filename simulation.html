@@ -55,7 +55,7 @@
     <div class="w-full max-w-7xl mx-auto">
       <div class="text-center mb-4">
         <h1 class="text-3xl font-bold text-slate-800">Labyrinth</h1>
-        <p class="text-slate-600">A spiritual technology.</p>
+        <p class="text-slate-600">Simulation</p>
       </div>
 
       <!-- User Inputs (Collapsible on mobile) -->
@@ -537,12 +537,15 @@
           if (!graphArea || !numRows || !numCols) return;
           // Minimum pixel size per cell to keep letters legible
           const minCellSize = 56; // px
+          const maxCellSize = 80; // px (prevent cells from getting too large)
           const verticalPadding = 32; // account for internal padding / borders
           const targetMinHeight = Math.max(
             numRows * minCellSize + verticalPadding,
             340,
           );
+          const targetMaxHeight = numRows * maxCellSize + verticalPadding;
           graphArea.style.minHeight = targetMinHeight + "px";
+          graphArea.style.maxHeight = targetMaxHeight + "px";
         }
 
         // ------------------------------------------------------------
