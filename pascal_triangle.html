@@ -10,20 +10,50 @@
       rel="stylesheet"
     />
     <style>
+      :root {
+        --page-bg-top: #fffdf7;
+        --page-bg-mid: #f8fafc;
+        --panel-bg: rgb(255 255 255 / 0.88);
+        --panel-border: #d9e2ec;
+        --text-muted: #475569;
+        --cell-hue: 224;
+        --cell-sat: 45%;
+        --state-good: #65c18c;
+        --state-alert: #e8b949;
+        --state-target: #b91c1c;
+      }
       body {
         font-family: Georgia, serif;
-        background-color: #f8fafc; /* Tailwind gray-50 */
+        color: #1e293b;
+        background:
+          radial-gradient(1600px 550px at 12% -8%, #f6efe0 0%, transparent 55%),
+          linear-gradient(
+            180deg,
+            var(--page-bg-top) 0%,
+            var(--page-bg-mid) 100%
+          );
+      }
+      .page-shell {
+        max-width: 76rem;
+        margin: 0 auto;
+      }
+      .intro-copy p {
+        max-width: 72ch;
+        line-height: 1.72;
       }
       .triangle-header-shell {
         position: sticky;
         top: 0;
         z-index: 40;
-        background-color: rgb(248 250 252 / 0.95);
+        background-color: rgb(248 250 252 / 0.92);
         backdrop-filter: blur(2px);
         border-bottom: 1px solid #e2e8f0;
+        box-shadow: 0 8px 20px -18px rgb(15 23 42 / 0.45);
       }
       .triangle-scroll {
         overflow-x: auto; /* Horizontal scrolling for wide triangles */
+        scrollbar-width: thin;
+        scrollbar-color: #a5b4fc #e2e8f0;
       }
       .triangle-scroll-header {
         scrollbar-width: none;
@@ -44,6 +74,12 @@
         gap: 4px; /* Space between rows */
         padding-bottom: 2rem;
         padding: 1rem;
+        background: linear-gradient(
+          180deg,
+          rgb(255 255 255 / 0.55),
+          transparent
+        );
+        border-radius: 0.75rem;
       }
       .triangle-row {
         display: flex;
@@ -70,7 +106,9 @@
         left: 0;
         z-index: 35;
         background-color: #f8fafc;
-        box-shadow: 2px 0 4px -1px rgb(0 0 0 / 0.08);
+        box-shadow:
+          2px 0 4px -1px rgb(0 0 0 / 0.08),
+          12px 0 14px -14px rgb(30 41 59 / 0.55);
       }
       .triangle-header-shell .sticky-first-col {
         z-index: 45;
@@ -96,73 +134,199 @@
         height: 48px;
         border-radius: 9999px; /* Make it a circle */
         --cell-bg-lightness: 98%; /* A very light default, close to white */
-        background-color: hsl(230, 50%, var(--cell-bg-lightness));
+        background-color: hsl(
+          var(--cell-hue),
+          var(--cell-sat),
+          var(--cell-bg-lightness)
+        );
         color: #1e293b; /* slate-900 — darker for better contrast on mid-range blue */
         font-weight: 500;
         font-size: 1rem;
         box-shadow:
-          0 1px 3px 0 rgb(0 0 0 / 0.1),
-          0 1px 2px -1px rgb(0 0 0 / 0.1);
-        transition: all 0.2s ease-in-out;
+          0 1px 2px 0 rgb(0 0 0 / 0.08),
+          0 1px 1px -1px rgb(0 0 0 / 0.08);
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease,
+          background-color 0.2s ease,
+          color 0.2s ease;
         flex-shrink: 0;
         position: relative; /* Needed for z-index on hover */
+        outline: none;
       }
       .triangle-cell:hover {
-        transform: scale(1.15);
-        background-color: #e0e7ff; /* indigo-100 */
-        color: #4338ca; /* indigo-700 */
+        transform: scale(1.1);
+        background-color: #dde8ff;
+        color: #3730a3;
+        box-shadow: 0 8px 16px -8px rgb(67 56 202 / 0.45);
         z-index: 30;
       }
+      .triangle-cell:focus-visible,
+      #rows-slider:focus-visible {
+        outline: 3px solid #312e81;
+        outline-offset: 2px;
+      }
       .parent-highlight {
-        box-shadow: 0 0 0 3px #fbbf24; /* amber-400 */
+        box-shadow: 0 0 0 3px var(--state-alert);
         z-index: 10;
       }
       .range-highlight {
-        border: 2px solid #86efac;
+        border: 2px solid var(--state-good);
+        border-style: solid;
       }
       .target-value-highlight {
         border: 2px solid #ffffff;
         box-shadow:
-          0 0 0 4px #b91c1c,
+          0 0 0 4px var(--state-target),
           0 0 0 8px #fecaca,
           0 0 22px 4px rgb(220 38 38 / 0.7),
           0 1px 3px 0 rgb(0 0 0 / 0.1),
           0 1px 2px -1px rgb(0 0 0 / 0.1);
         z-index: 20;
       }
+      .section-card {
+        background-color: var(--panel-bg);
+        border: 1px solid var(--panel-border);
+        border-radius: 0.9rem;
+        box-shadow:
+          0 1px 2px rgb(15 23 42 / 0.03),
+          0 10px 28px -20px rgb(15 23 42 / 0.2);
+      }
+      .helper-note {
+        color: var(--text-muted);
+        font-family: Inter, sans-serif;
+        letter-spacing: 0.02em;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .triangle-cell,
+        .triangle-cell:hover {
+          transition: none;
+          transform: none;
+        }
+      }
 
       /* Responsive adjustments */
       @media (max-width: 768px) {
+        .intro-copy p {
+          line-height: 1.65;
+        }
+        #triangle-header-container,
+        #triangle-container {
+          padding: 0.75rem;
+        }
         .triangle-cell {
-          width: 36px;
-          height: 36px;
+          width: 34px;
+          height: 34px;
           font-size: 0.8rem;
         }
+        .row-number {
+          width: 58px;
+          min-height: 40px;
+          font-size: 0.9rem;
+        }
+        .column-number {
+          width: 34px;
+          margin-right: 0.35rem;
+          font-size: 0.9rem;
+        }
         .triangle-row {
-          gap: 8px;
+          gap: 6px;
+          min-height: 40px;
+        }
+        .helper-note {
+          text-align: center;
         }
       }
       @media (max-width: 480px) {
+        .page-shell {
+          margin-left: 0.2rem;
+          margin-right: 0.2rem;
+        }
         .triangle-cell {
           width: 28px;
           height: 28px;
           font-size: 0.7rem;
         }
+        .row-number {
+          width: 52px;
+          min-height: 34px;
+          font-size: 0.8rem;
+        }
+        .column-number {
+          width: 28px;
+          margin-right: 0.25rem;
+          font-size: 0.8rem;
+        }
+        .triangle-row {
+          min-height: 34px;
+          gap: 4px;
+        }
+      }
+      @media (max-width: 360px) {
+        body {
+          padding: 0.6rem;
+        }
+        .page-shell > h1 {
+          font-size: 1.62rem;
+          line-height: 1.2;
+        }
+        .page-shell > p {
+          font-size: 0.86rem;
+          margin-bottom: 1rem;
+        }
+        .intro-copy p {
+          font-size: 0.95rem;
+          line-height: 1.58;
+        }
+        #triangle-header-container,
+        #triangle-container {
+          padding: 0.5rem;
+        }
+        .triangle-cell {
+          width: 24px;
+          height: 24px;
+          font-size: 0.62rem;
+        }
+        .row-number {
+          width: 46px;
+          min-height: 30px;
+          font-size: 0.72rem;
+          margin-right: 0.2rem;
+        }
+        .column-number {
+          width: 24px;
+          height: 22px;
+          margin-right: 0.15rem;
+          font-size: 0.65rem;
+        }
+        .triangle-row {
+          min-height: 30px;
+          gap: 3px;
+        }
+        .helper-note {
+          font-size: 0.76rem;
+        }
+        .section-card {
+          border-radius: 0.75rem;
+        }
       }
     </style>
   </head>
   <body class="p-4 md:p-8">
-    <div class="mb-8 max-w-6xl mx-auto">
+    <div class="page-shell mb-10">
       <h1
-        class="text-3xl md:text-4xl font-bold text-slate-800 text-center mb-6"
+        class="text-3xl md:text-4xl font-bold text-slate-800 text-center mb-2"
       >
         Pascal’s Triangle and Florentian Labyrinths
       </h1>
+      <p class="text-center text-sm md:text-base text-slate-500 mb-6">
+        A visual study of combinatorics and devotional geometry.
+      </p>
 
       <div
-        class="grid grid-cols-1 lg:grid-cols-[minmax(0,1.6fr)_minmax(280px,1fr)] gap-8 items-start"
+        class="grid grid-cols-1 lg:grid-cols-[minmax(0,1.6fr)_minmax(280px,1fr)] gap-8 items-start section-card p-4 md:p-6"
       >
-        <div>
+        <div class="intro-copy">
           <p class="mt-2 text-base md:text-lg text-slate-600 text-left">
             This shows the relationship between Pascal’s Triangle and labyrinths
             like Florentius’s. For Pascal’s Triangle, each cell is the sum of
@@ -282,36 +446,42 @@
       <div id="triangle-container"></div>
     </div>
 
-    <div
-      class="max-w-md mx-auto p-4 bg-white rounded-lg shadow-sm flex flex-col justify-center items-center gap-4 mb-8"
-    >
-      <div class="flex items-center gap-4 w-full">
-        <label
-          for="rows-slider"
-          class="text-slate-700 font-medium whitespace-nowrap"
-          >Number of Rows to display:</label
+    <div class="page-shell">
+      <div
+        class="max-w-md mx-auto p-4 bg-white rounded-lg shadow-sm flex flex-col justify-center items-center gap-4 mb-10 section-card"
+      >
+        <div
+          class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 w-full"
         >
-        <input
-          type="range"
-          id="rows-slider"
-          value="30"
-          min="10"
-          max="50"
-          class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
-        />
-        <span
-          id="slider-value"
-          class="font-semibold text-slate-700 w-8 text-center"
-          >30</span
-        >
+          <label
+            for="rows-slider"
+            class="text-slate-700 font-medium sm:whitespace-nowrap"
+            >Number of Rows to display:</label
+          >
+          <input
+            type="range"
+            id="rows-slider"
+            value="30"
+            min="10"
+            max="50"
+            class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
+          />
+          <span
+            id="slider-value"
+            class="font-semibold text-slate-700 w-8 text-center"
+            >30</span
+          >
+        </div>
       </div>
     </div>
 
     <!-- Legend -->
-    <div class="max-w-2xl mx-auto mt-4 mb-8 px-4">
+    <div class="max-w-2xl mx-auto mt-2 mb-10 px-4 section-card p-4 md:p-5">
       <h2 class="text-base font-semibold text-slate-700 mb-3">Legend</h2>
       <ul class="flex flex-col gap-3 text-sm text-slate-600">
-        <li class="flex items-center gap-3">
+        <li
+          class="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3"
+        >
           <span class="flex gap-1 flex-shrink-0">
             <span
               style="
@@ -364,7 +534,9 @@
           </span>
           <span>Cell color darkens as the value grows.</span>
         </li>
-        <li class="flex items-center gap-3">
+        <li
+          class="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3"
+        >
           <span
             style="
               display: inline-flex;
@@ -384,11 +556,13 @@
             >120</span
           >
           <span
-            >Green border: Suggested limts for a useful spiritual tool (not too
+            >Green border: suggested limits for a useful spiritual tool (not too
             many or too few paths, not too few rows or columns).</span
           >
         </li>
-        <li class="flex items-center gap-3">
+        <li
+          class="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3"
+        >
           <span
             style="
               display: inline-flex;
@@ -415,7 +589,9 @@
             Florentius labyrinth.</span
           >
         </li>
-        <li class="flex items-center gap-3">
+        <li
+          class="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3"
+        >
           <span
             style="
               display: inline-flex;
@@ -546,9 +722,14 @@
             row.forEach((num, b) => {
               const cellDiv = document.createElement("div");
               cellDiv.className = "triangle-cell";
+              cellDiv.tabIndex = 0;
               cellDiv.textContent = num.toLocaleString();
               cellDiv.dataset.a = a;
               cellDiv.dataset.b = b;
+              cellDiv.setAttribute(
+                "aria-label",
+                `len=${a + 1}, m=${b + 1}, value ${num.toLocaleString()}`,
+              );
 
               const len = a + 1;
               const m = b + 1;
@@ -617,42 +798,55 @@
         function addHoverListeners() {
           const cells = document.querySelectorAll(".triangle-cell");
 
+          const applyParentHighlight = (cell) => {
+            const a = parseInt(cell.dataset.a);
+            const b = parseInt(cell.dataset.b);
+            cell.style.color = "";
+            if (a > 0) {
+              const parent1 = document.querySelector(
+                `.triangle-cell[data-a="${a - 1}"][data-b="${b - 1}"]`,
+              );
+              const parent2 = document.querySelector(
+                `.triangle-cell[data-a="${a - 1}"][data-b="${b}"]`,
+              );
+              if (parent1) parent1.classList.add("parent-highlight");
+              if (parent2) parent2.classList.add("parent-highlight");
+            }
+          };
+
+          const clearParentHighlight = (cell) => {
+            const a = parseInt(cell.dataset.a);
+            const b = parseInt(cell.dataset.b);
+            if (cell.dataset.darkText === "1") {
+              cell.style.color = "#f8fafc";
+            }
+            if (a > 0) {
+              const parent1 = document.querySelector(
+                `.triangle-cell[data-a="${a - 1}"][data-b="${b - 1}"]`,
+              );
+              const parent2 = document.querySelector(
+                `.triangle-cell[data-a="${a - 1}"][data-b="${b}"]`,
+              );
+              if (parent1) parent1.classList.remove("parent-highlight");
+              if (parent2) parent2.classList.remove("parent-highlight");
+            }
+          };
+
           cells.forEach((cell) => {
             cell.addEventListener("mouseenter", () => {
-              const a = parseInt(cell.dataset.a);
-              const b = parseInt(cell.dataset.b);
-              // Override inline color so the CSS :hover color is always readable
-              cell.style.color = "";
-              if (a > 0) {
-                const parent1 = document.querySelector(
-                  `.triangle-cell[data-a="${a - 1}"][data-b="${b - 1}"]`,
-                );
-                const parent2 = document.querySelector(
-                  `.triangle-cell[data-a="${a - 1}"][data-b="${b}"]`,
-                );
-
-                if (parent1) parent1.classList.add("parent-highlight");
-                if (parent2) parent2.classList.add("parent-highlight");
-              }
+              applyParentHighlight(cell);
             });
 
             cell.addEventListener("mouseleave", () => {
-              const a = parseInt(cell.dataset.a);
-              const b = parseInt(cell.dataset.b);
-              // Restore inline color for dark cells
-              if (cell.dataset.darkText === "1") {
-                cell.style.color = "#f8fafc";
-              }
-              if (a > 0) {
-                const parent1 = document.querySelector(
-                  `.triangle-cell[data-a="${a - 1}"][data-b="${b - 1}"]`,
-                );
-                const parent2 = document.querySelector(
-                  `.triangle-cell[data-a="${a - 1}"][data-b="${b}"]`,
-                );
-                if (parent1) parent1.classList.remove("parent-highlight");
-                if (parent2) parent2.classList.remove("parent-highlight");
-              }
+              clearParentHighlight(cell);
+            });
+
+            cell.addEventListener("focus", () => {
+              applyParentHighlight(cell);
+            });
+
+            cell.addEventListener("blur", () => {
+              clearParentHighlight(cell);
             });
           });
         }
