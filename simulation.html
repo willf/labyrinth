@@ -408,9 +408,19 @@
           };
         }
 
+        function calculateCellSize(numCols) {
+          const graphArea = document.getElementById("graph-area");
+          const availableWidth = graphArea?.clientWidth || (window.innerWidth - 50);
+          const minCellSize = 70; // px
+          const maxCellSize = 160; // px
+          const padding = 32;
+          const calculatedSize = (availableWidth - padding) / numCols;
+          return Math.max(minCellSize, Math.min(maxCellSize, calculatedSize));
+        }
+
         function calculateCellPositions(rows, cols) {
           const positions = {};
-          const cellSize = 160;
+          const cellSize = calculateCellSize(cols);
 
           for (let i = 0; i < rows; i++) {
             for (let j = 0; j < cols; j++) {
@@ -483,7 +493,8 @@
 
         function drawMatrixGrid() {
           svg.innerHTML = "";
-          svg.setAttribute("viewBox", `0 0 ${numCols * 160} ${numRows * 160}`);
+          const cellSize = calculateCellSize(numCols);
+          svg.setAttribute("viewBox", `0 0 ${numCols * cellSize} ${numRows * cellSize}`);
           svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
           const gridContainer = document.createElementNS(
             "http://www.w3.org/2000/svg",
@@ -536,23 +547,12 @@
 
         function adjustGraphSize() {
           const graphArea = document.getElementById("graph-area");
-          if (!graphArea || !numRows || !numCols) return;
-          // Minimum pixel size per cell to keep letters legible
-          const minCellSize = 100; // px
-          const maxCellSize = 160; // px (cap individual cell size)
-          const padding = 32; // account for internal padding / borders
-          const targetMinHeight = Math.max(
-            numRows * minCellSize + padding,
-            340,
-          );
-          const targetMinWidth = numCols * minCellSize + padding;
-          const targetMaxHeight = numRows * maxCellSize + padding;
-          const targetMaxWidth = numCols * maxCellSize + padding;
-          graphArea.style.minHeight = targetMinHeight + "px";
-          graphArea.style.minWidth = targetMinWidth + "px";
-          graphArea.style.maxHeight = targetMaxHeight + "px";
-          graphArea.style.maxWidth = targetMaxWidth + "px";
-          graphArea.style.marginLeft = "auto";
+          const cellSize = calculateCellSize(numCols);
+          const padding = 32;
+          const targetHeight = numRows * cellSize + padding;
+          graphArea.style.minHeight = Math.max(targetHeight, 340) + "px";
+          graphArea.style.maxHeight = "none";
+          graphArea.style.width = "100%;
           graphArea.style.marginRight = "auto";
           graphArea.style.overflowX = "auto";
         }
