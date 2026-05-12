@@ -23,7 +23,20 @@
           transform 0.3s;
       }
       #tracer-token {
-        transition: cx 0.4s ease-in-out, cy 0.4s ease-in-out;
+        transition:
+          cx 0.4s ease-in-out,
+          cy 0.4s ease-in-out;
+      }
+      .path-cell-highlight {
+        animation: pathHighlight 0.4s ease-out forwards;
+      }
+      @keyframes pathHighlight {
+        0% {
+          filter: drop-shadow(0 0 0 #fbbf24);
+        }
+        100% {
+          filter: drop-shadow(0 0 0 transparent);
+        }
       }
       .graph-bg {
         background-color: #f5f3f0;
@@ -520,6 +533,7 @@
                 "http://www.w3.org/2000/svg",
                 "g",
               );
+              g.setAttribute("data-node-id", nodeId);
               const rect = document.createElementNS(
                 "http://www.w3.org/2000/svg",
                 "rect",
@@ -593,6 +607,22 @@
           if (opts.asBigInt) return value;
           const MAX_SAFE = BigInt(Number.MAX_SAFE_INTEGER);
           return value <= MAX_SAFE ? Number(value) : value; // fallback BigInt if too large
+        }
+
+        function highlightPath(path) {
+          if (!path || path.length === 0) return;
+          path.forEach((nodeId) => {
+            const cellGroup = document.querySelector(
+              `[data-node-id="${nodeId}"]`,
+            );
+            if (cellGroup) {
+              cellGroup.classList.add("path-cell-highlight");
+              // Remove highlight after animation completes
+              setTimeout(() => {
+                cellGroup.classList.remove("path-cell-highlight");
+              }, 2000);
+            }
+          });
         }
 
         function moveToken(node) {
@@ -756,6 +786,7 @@
 
           if (nextNode === END_NODE) {
             state.foundPaths.push([...state.pathStack]);
+            highlightPath(state.pathStack);
             showMessage(`🎉 Path Found! Backtrack to find more.`);
           } else {
             showMessage(
