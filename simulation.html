@@ -631,7 +631,7 @@
                     text.style.fill = "#ef4444";
                     text.style.fontWeight = "bold";
                   }
-                  // Remove highlight after animation (2000ms = 1500ms highlight + 500ms pause)
+                  // Remove highlight after animation (1000ms pause)
                   setTimeout(() => {
                     if (rect) {
                       rect.style.stroke = "";
@@ -641,7 +641,7 @@
                       text.style.fill = "";
                       text.style.fontWeight = "";
                     }
-                  }, 2000);
+                  }, 1000);
                 }, index * 50);
               }
             }
@@ -912,7 +912,7 @@
             if (state.currentNode === END_NODE) {
               autoModePauseTimeout = setTimeout(() => {
                 autoModePauseTimeout = null;
-              }, 2000);
+              }, 1000);
             }
           }
           if (state.isFinished) {
