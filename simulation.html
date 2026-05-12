@@ -212,7 +212,7 @@
             id="graph-area"
             class="graph-bg border border-stone-300 rounded-xl shadow-lg relative overflow-hidden p-4"
           >
-            <svg id="graph-svg" class="w-full h-full">
+            <svg id="graph-svg">
               <!-- Matrix will be populated by JS -->
               <!-- Memory markers container -->
               <g id="memory-markers-container"></g>
@@ -517,11 +517,12 @@
           svg.innerHTML = "";
           const cellSize = calculateCellSize(numCols);
           const fontSize = Math.round(cellSize * 0.6); // font size proportional to cell size
-          svg.setAttribute(
-            "viewBox",
-            `0 0 ${numCols * cellSize} ${numRows * cellSize}`,
-          );
-          svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+          const svgWidth = numCols * cellSize;
+          const svgHeight = numRows * cellSize;
+          svg.setAttribute("viewBox", `0 0 ${svgWidth} ${svgHeight}`);
+          svg.setAttribute("width", svgWidth);
+          svg.setAttribute("height", svgHeight);
+          svg.removeAttribute("preserveAspectRatio");
           const gridContainer = document.createElementNS(
             "http://www.w3.org/2000/svg",
             "g",
