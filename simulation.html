@@ -611,14 +611,9 @@
 
         function highlightPath(path) {
           if (!path || path.length === 0) return;
-          console.log("Highlighting path:", path);
           path.forEach((nodeId, index) => {
             const cellGroup = document.querySelector(
               `[data-node-id="${nodeId}"]`,
-            );
-            console.log(
-              `Looking for node ${nodeId}:`,
-              cellGroup ? "found" : "NOT FOUND",
             );
             if (cellGroup) {
               // Get the rect and text inside the group
@@ -627,7 +622,6 @@
               if (rect || text) {
                 // Delay each cell's highlight slightly for a wave effect
                 setTimeout(() => {
-                  console.log(`Applying highlight to ${nodeId}`);
                   if (rect) {
                     rect.style.stroke = "#fbbf24";
                     rect.style.strokeWidth = "3";
@@ -636,7 +630,7 @@
                     text.style.fill = "#fbbf24";
                     text.style.fontWeight = "bold";
                   }
-                  // Remove highlight after animation
+                  // Remove highlight after animation (2000ms = 1500ms highlight + 500ms pause)
                   setTimeout(() => {
                     if (rect) {
                       rect.style.stroke = "";
@@ -646,8 +640,12 @@
                       text.style.fill = "";
                       text.style.fontWeight = "";
                     }
-                  }, 1500);
+                  }, 2000);
                 }, index * 50);
+              }
+            }
+          });
+        }
               }
             }
           });
