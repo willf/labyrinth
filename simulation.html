@@ -616,17 +616,26 @@
             const cellGroup = document.querySelector(
               `[data-node-id="${nodeId}"]`,
             );
-            console.log(`Looking for node ${nodeId}:`, cellGroup ? "found" : "NOT FOUND");
+            console.log(
+              `Looking for node ${nodeId}:`,
+              cellGroup ? "found" : "NOT FOUND",
+            );
             if (cellGroup) {
-              // Delay each cell's highlight slightly for a wave effect
-              setTimeout(() => {
-                console.log(`Applying highlight to ${nodeId}`);
-                cellGroup.style.filter = "drop-shadow(0 0 8px #fbbf24)";
-                // Remove highlight after animation
+              // Get the rect inside the group
+              const rect = cellGroup.querySelector("rect");
+              if (rect) {
+                // Delay each cell's highlight slightly for a wave effect
                 setTimeout(() => {
-                  cellGroup.style.filter = "none";
-                }, 1500);
-              }, index * 50);
+                  console.log(`Applying highlight to ${nodeId}`);
+                  rect.style.stroke = "#fbbf24";
+                  rect.style.strokeWidth = "3";
+                  // Remove highlight after animation
+                  setTimeout(() => {
+                    rect.style.stroke = "";
+                    rect.style.strokeWidth = "";
+                  }, 1500);
+                }, index * 50);
+              }
             }
           });
         }
