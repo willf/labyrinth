@@ -384,6 +384,7 @@
         let autoIntervalId = null;
         let autoStepMs = 650; // speed of automatic traversal (ms)
         let autoModePauseTimeout = null; // timeout for pausing auto mode after reaching goal
+        let previousColoredNode = null; // track which node's letter is currently colored
 
         function generateMatrixAndGraph(s, m) {
           const n = s.length;
@@ -485,6 +486,7 @@
           cellPositions = calculateCellPositions(numRows, numCols);
 
           state = initializeState();
+          previousColoredNode = null;
           drawMatrixGrid();
           adjustGraphSize();
           memoryMarkersContainer.innerHTML = "";
@@ -648,9 +650,37 @@
 
         function moveToken(node) {
           if (!node || !cellPositions[node]) return;
-          const pos = cellPositions[node];
-          tracerToken.setAttribute("cx", pos.cx);
-          tracerToken.setAttribute("cy", pos.cy);
+          
+          // Uncolor the previous node's letter
+          if (previousColoredNode) {
+            const prevCellGroup = document.querySelector(
+              `[data-node-id="${previousColoredNode}"]`,
+            );
+            if (prevCellGroup) {
+              const prevText = prevCellGroup.querySelector("text");
+              if (prevText) {
+                prevText.style.fill = "";
+                prevText.style.fontWeight = "";
+              }
+            }
+          }
+          
+          // Color the new node's letter red
+          const cellGroup = document.querySelector(
+            `[data-node-id="${node}"]`,
+          );
+          if (cellGroup) {
+            const text = cellGroup.querySelector("text");
+            if (text) {
+              text.style.fill = "#dc2626";
+              text.style.fontWeight = "bold";
+            }
+          }
+          
+          previousColoredNode = node;
+          // Keep the tracer token off-screen
+          tracerToken.setAttribute("cx", "-1000");
+          tracerToken.setAttribute("cy", "-1000");
         }
 
         function addMemoryMarker(node) {
