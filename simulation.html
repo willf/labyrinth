@@ -68,7 +68,7 @@
   <body
     class="bg-stone-200 flex flex-col items-center justify-start min-h-screen p-4"
   >
-    <div class="w-full max-w-7xl mx-auto">
+    <div id="content-wrapper" class="w-full max-w-7xl mx-auto">
       <div class="text-center mb-4">
         <h1 class="text-3xl font-bold text-slate-800">Labyrinth</h1>
         <p class="text-slate-600">Simulation</p>
@@ -109,10 +109,8 @@
           ></div>
         </div>
         <div id="controls-body" class="p-4 pt-3 sm:pt-4">
-          <div
-            class="flex flex-col sm:flex-row items-center justify-center gap-4"
-          >
-            <div class="w-full sm:w-auto">
+          <div class="flex flex-col items-stretch gap-4">
+            <div class="w-full">
               <label
                 for="mainStringInput"
                 class="block text-xs sm:text-sm font-medium text-slate-700"
@@ -122,7 +120,7 @@
                 type="text"
                 id="mainStringInput"
                 value="ORA POR ME"
-                class="mt-1 block w-full sm:w-64 rounded-md border-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm sm:text-base py-1.5"
+                class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm sm:text-base py-1.5"
               />
               <label
                 for="phrasePresetSelect"
@@ -131,7 +129,7 @@
               >
               <select
                 id="phrasePresetSelect"
-                class="mt-1 block w-full sm:w-64 rounded-md border-slate-300 bg-white text-[11px] sm:text-sm py-1.5 pr-6 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                class="mt-1 block w-full rounded-md border-slate-300 bg-white text-[11px] sm:text-sm py-1.5 pr-6 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               >
                 <option value="">(Choose a preset)</option>
                 <option value="ORA POR ME">ORA POR ME</option>
@@ -147,7 +145,7 @@
                 <option value="Acuérdate de mí">Acuérdate de mí</option>
               </select>
             </div>
-            <div class="w-full sm:w-auto">
+            <div class="w-full">
               <div class="flex items-center justify-between">
                 <label
                   for="mValueInput"
@@ -167,7 +165,7 @@
                 max="8"
                 value="4"
                 step="1"
-                class="mt-2 block w-full sm:w-56 cursor-pointer accent-amber-600 h-2"
+                class="mt-2 block w-full cursor-pointer accent-amber-600 h-2"
               />
               <div
                 class="hidden sm:flex items-center gap-1 mt-1 text-[11px] text-stone-600"
@@ -193,10 +191,10 @@
                 <span id="mValueMaxLabel_mobile">8</span>
               </div>
             </div>
-            <div class="w-full sm:w-auto flex sm:block">
+            <div class="w-full">
               <button
                 id="generate-btn"
-                class="action-button bg-amber-600 text-white font-semibold py-2 px-5 rounded-lg shadow-md w-full sm:w-auto text-sm sm:text-base"
+                class="action-button bg-amber-600 text-white font-semibold py-2 px-5 rounded-lg shadow-md w-full text-sm sm:text-base"
               >
                 Generate
               </button>
@@ -431,7 +429,7 @@
           // Safeguard: if we get an unreasonable width, constrain it
           availableWidth = Math.min(availableWidth, 1400);
           const minCellSize = 70; // px
-          const maxCellSize = 80; // px
+          const maxCellSize = window.innerWidth >= 1024 ? 120 : 80; // px
           const padding = 32;
           const calculatedSize = (availableWidth - padding) / numCols;
           return Math.max(minCellSize, Math.min(maxCellSize, calculatedSize));
@@ -523,6 +521,12 @@
           svg.setAttribute("width", svgWidth);
           svg.setAttribute("height", svgHeight);
           svg.removeAttribute("preserveAspectRatio");
+          // Constrain outer wrapper so controls match grid width
+          const contentWrapper = document.getElementById("content-wrapper");
+          if (contentWrapper) {
+            // 32px = p-4 padding (16px each side) on graph-area
+            contentWrapper.style.maxWidth = svgWidth + 32 + "px";
+          }
           const gridContainer = document.createElementNS(
             "http://www.w3.org/2000/svg",
             "g",
@@ -742,7 +746,8 @@
           }
         }
 
-        function showMessage(text) {
+        function showMessage(text, force = false) {
+          if (!force && state.isAutoRunning) return;
           messageText.parentElement.style.opacity = "0";
           messageText.parentElement.style.transform = "translateY(10px)";
           setTimeout(() => {
@@ -876,7 +881,10 @@
                 state.currentNode = node;
                 state.isFinished = true;
                 moveToken(node);
-                showMessage(`🏁 All paths found! The simulation is complete.`);
+                showMessage(
+                  `🏁 All paths found! The simulation is complete.`,
+                  true,
+                );
                 updateUI();
                 return;
               }
@@ -890,7 +898,7 @@
             state.currentNode = START_NODE;
             state.isFinished = true;
             moveToken(START_NODE);
-            showMessage(`🏁 All paths found!`);
+            showMessage(`🏁 All paths found!`, true);
             updateUI();
           }
         }
@@ -930,7 +938,7 @@
           setAutoButtonState(true);
           // ensure UI reflects auto mode
           updateUI();
-          showMessage("Automatic exploration started.");
+          showMessage("Automatic exploration started.", true);
           autoIntervalId = setInterval(stepAuto, autoStepMs);
         }
 
@@ -947,7 +955,7 @@
             state.isAutoRunning = false;
             setAutoButtonState(false);
             updateUI();
-            showMessage(msg || "Automatic exploration stopped.");
+            showMessage(msg || "Automatic exploration stopped.", true);
           }
         }
 
