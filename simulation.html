@@ -653,6 +653,10 @@
           if (!node || !cellPositions[node]) return;
           const pos = cellPositions[node];
 
+          // Move the tracer token circle to the current node first
+          tracerToken.setAttribute("cx", pos.cx);
+          tracerToken.setAttribute("cy", pos.cy);
+
           // Uncolor the previous node's letter
           if (previousColoredNode) {
             const prevCellGroup = document.querySelector(
@@ -678,9 +682,6 @@
           }
 
           previousColoredNode = node;
-          // Move the tracer token circle to the current node
-          tracerToken.setAttribute("cx", pos.cx);
-          tracerToken.setAttribute("cy", pos.cy);
         }
 
         function addMemoryMarker(node) {
