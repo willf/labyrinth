@@ -515,6 +515,7 @@
         function drawMatrixGrid() {
           svg.innerHTML = "";
           const cellSize = calculateCellSize(numCols);
+          const fontSize = Math.round(cellSize * 0.6); // font size proportional to cell size
           svg.setAttribute(
             "viewBox",
             `0 0 ${numCols * cellSize} ${numRows * cellSize}`,
@@ -556,7 +557,7 @@
               text.setAttribute("y", pos.cy);
               text.setAttribute("dy", ".3em");
               text.setAttribute("text-anchor", "middle");
-              text.setAttribute("font-size", "50");
+              text.setAttribute("font-size", fontSize);
               text.setAttribute("class", "grid-cell-text fill-stone-800");
               text.textContent = letterMatrix[i][j];
 
