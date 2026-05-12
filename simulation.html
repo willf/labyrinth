@@ -220,10 +220,11 @@
               <circle
                 id="tracer-token"
                 r="45"
-                fill="#dc2626"
+                fill="none"
+                stroke="#dc2626"
+                stroke-width="2"
                 cx="-100"
                 cy="-100"
-                opacity="0.75"
               ></circle>
             </svg>
           </div>
@@ -650,7 +651,8 @@
 
         function moveToken(node) {
           if (!node || !cellPositions[node]) return;
-          
+          const pos = cellPositions[node];
+
           // Uncolor the previous node's letter
           if (previousColoredNode) {
             const prevCellGroup = document.querySelector(
@@ -664,11 +666,9 @@
               }
             }
           }
-          
+
           // Color the new node's letter red
-          const cellGroup = document.querySelector(
-            `[data-node-id="${node}"]`,
-          );
+          const cellGroup = document.querySelector(`[data-node-id="${node}"]`);
           if (cellGroup) {
             const text = cellGroup.querySelector("text");
             if (text) {
@@ -676,11 +676,11 @@
               text.style.fontWeight = "bold";
             }
           }
-          
+
           previousColoredNode = node;
-          // Keep the tracer token off-screen
-          tracerToken.setAttribute("cx", "-1000");
-          tracerToken.setAttribute("cy", "-1000");
+          // Move the tracer token circle to the current node
+          tracerToken.setAttribute("cx", pos.cx);
+          tracerToken.setAttribute("cy", pos.cy);
         }
 
         function addMemoryMarker(node) {
