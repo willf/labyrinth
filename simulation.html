@@ -385,6 +385,7 @@
         let state = {};
         let autoIntervalId = null;
         let autoStepMs = 650; // speed of automatic traversal (ms)
+        let autoModePauseTimeout = null; // timeout for pausing auto mode after reaching goal
 
         function generateMatrixAndGraph(s, m) {
           const n = s.length;
@@ -892,6 +893,11 @@
         }
 
         function stepAuto() {
+          // If we're pausing after reaching goal, skip this step
+          if (autoModePauseTimeout) {
+            return;
+          }
+
           if (!state.isStarted) handleStart();
           if (state.isFinished) {
             stopAuto("Exploration complete.");
@@ -902,6 +908,12 @@
             handleBacktrack();
           } else {
             handleAdvance();
+            // If we just reached the goal, pause auto mode for the highlight duration
+            if (state.currentNode === END_NODE) {
+              autoModePauseTimeout = setTimeout(() => {
+                autoModePauseTimeout = null;
+              }, 2000);
+            }
           }
           if (state.isFinished) {
             stopAuto("Exploration complete.");
@@ -923,6 +935,10 @@
           if (autoIntervalId) {
             clearInterval(autoIntervalId);
             autoIntervalId = null;
+          }
+          if (autoModePauseTimeout) {
+            clearTimeout(autoModePauseTimeout);
+            autoModePauseTimeout = null;
           }
           if (state.isAutoRunning) {
             state.isAutoRunning = false;
