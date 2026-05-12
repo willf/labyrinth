@@ -611,13 +611,16 @@
 
         function highlightPath(path) {
           if (!path || path.length === 0) return;
+          console.log("Highlighting path:", path);
           path.forEach((nodeId, index) => {
             const cellGroup = document.querySelector(
               `[data-node-id="${nodeId}"]`,
             );
+            console.log(`Looking for node ${nodeId}:`, cellGroup ? "found" : "NOT FOUND");
             if (cellGroup) {
               // Delay each cell's highlight slightly for a wave effect
               setTimeout(() => {
+                console.log(`Applying highlight to ${nodeId}`);
                 cellGroup.style.filter = "drop-shadow(0 0 8px #fbbf24)";
                 // Remove highlight after animation
                 setTimeout(() => {
