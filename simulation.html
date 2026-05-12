@@ -621,18 +621,31 @@
               cellGroup ? "found" : "NOT FOUND",
             );
             if (cellGroup) {
-              // Get the rect inside the group
+              // Get the rect and text inside the group
               const rect = cellGroup.querySelector("rect");
-              if (rect) {
+              const text = cellGroup.querySelector("text");
+              if (rect || text) {
                 // Delay each cell's highlight slightly for a wave effect
                 setTimeout(() => {
                   console.log(`Applying highlight to ${nodeId}`);
-                  rect.style.stroke = "#fbbf24";
-                  rect.style.strokeWidth = "3";
+                  if (rect) {
+                    rect.style.stroke = "#fbbf24";
+                    rect.style.strokeWidth = "3";
+                  }
+                  if (text) {
+                    text.style.fill = "#fbbf24";
+                    text.style.fontWeight = "bold";
+                  }
                   // Remove highlight after animation
                   setTimeout(() => {
-                    rect.style.stroke = "";
-                    rect.style.strokeWidth = "";
+                    if (rect) {
+                      rect.style.stroke = "";
+                      rect.style.strokeWidth = "";
+                    }
+                    if (text) {
+                      text.style.fill = "";
+                      text.style.fontWeight = "";
+                    }
                   }, 1500);
                 }, index * 50);
               }
