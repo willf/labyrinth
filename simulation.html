@@ -611,16 +611,19 @@
 
         function highlightPath(path) {
           if (!path || path.length === 0) return;
-          path.forEach((nodeId) => {
+          path.forEach((nodeId, index) => {
             const cellGroup = document.querySelector(
               `[data-node-id="${nodeId}"]`,
             );
             if (cellGroup) {
-              cellGroup.classList.add("path-cell-highlight");
-              // Remove highlight after animation completes
+              // Delay each cell's highlight slightly for a wave effect
               setTimeout(() => {
-                cellGroup.classList.remove("path-cell-highlight");
-              }, 2000);
+                cellGroup.style.filter = "drop-shadow(0 0 8px #fbbf24)";
+                // Remove highlight after animation
+                setTimeout(() => {
+                  cellGroup.style.filter = "none";
+                }, 1500);
+              }, index * 50);
             }
           });
         }
