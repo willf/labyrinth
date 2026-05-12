@@ -430,7 +430,7 @@
           const availableWidth =
             graphArea?.clientWidth || window.innerWidth - 50;
           const minCellSize = 70; // px
-          const maxCellSize = 160; // px
+          const maxCellSize = 80; // px
           const padding = 32;
           const calculatedSize = (availableWidth - padding) / numCols;
           return Math.max(minCellSize, Math.min(maxCellSize, calculatedSize));
